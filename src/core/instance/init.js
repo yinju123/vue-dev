@@ -15,7 +15,7 @@ let uid = 0;
 export function initMixin(Vue: Class<Component>) {
   Vue.prototype._init = function (options?: Object) {
     // 指向vue事例,但是不知道其 $data、$prop在哪里加上的
-    // $data、$prop是前面core index和instance里面加上的
+    // $data、$prop是前面core/instance/index stateMixin里面加上的
     const vm: Component = this;
     // a uid
     vm._uid = uid++;
@@ -39,9 +39,13 @@ export function initMixin(Vue: Class<Component>) {
       // internal component options needs special treatment.
       initInternalComponent(vm, options);
     } else {
-      // vm.constructor vue的构造函数，就是instance里面声明得
+      //这部分是将默认选项和自定义选项进行合并
       vm.$options = mergeOptions(
-        // components directives filters _base
+        /* 
+        components directives filters _base
+        components directives filters是在global-api index 里面的ASSET_TYPES添加的
+        vm.constructor vue的构造函数，就是instance里面声明得
+        */
         resolveConstructorOptions(vm.constructor),
         options || {},
         vm
@@ -102,7 +106,7 @@ export function initInternalComponent(
 
 export function resolveConstructorOptions(Ctor: Class<Component>) {
   let options = Ctor.options;
-  console.log('options', options)
+  // 不存在super
   if (Ctor.super) {
     const superOptions = resolveConstructorOptions(Ctor.super);
     const cachedSuperOptions = Ctor.superOptions;

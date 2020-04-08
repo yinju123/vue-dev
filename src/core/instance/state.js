@@ -150,10 +150,16 @@ function initData(vm: Component) {
         );
       // 不是以$或者_开头的属性，进行代理
     } else if (!isReserved(key)) {
+      // 将数据代理到vm上，并且数双向绑定
       proxy(vm, `_data`, key);
     }
   }
   // observe data
+  /* 
+    1 判断是否是对象等条件，主要功能是new Observer
+    2 Observer 定义this.dep = new Dep判断是数组，还是对象，是对象走walk
+    3 walk走 defineReactive
+  */
   observe(data, true /* asRootData */);
 }
 

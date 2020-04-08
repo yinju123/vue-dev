@@ -163,9 +163,18 @@ export function defineReactive(
     enumerable: true,
     configurable: true,
     get: function reactiveGetter() {
+      // 这个getter不知道什么时候会存在
       const value = getter ? getter.call(obj) : val;
-      // 这里是干嘛的
+      // Dep.target是watcher 在$mount 时候有
+      /* 
+        1 lifecycle 里面的声明了mountComponent，里面new watcher
+        2 mountComponent实际调用者是runtime/index
+      */
       if (Dep.target) {
+        /* 
+          1 调用watcher的addDep，watcher中添加dep
+          2 
+        */
         dep.depend();
         if (childOb) {
           childOb.dep.depend();
@@ -179,16 +188,19 @@ export function defineReactive(
     set: function reactiveSetter(newVal) {
       const value = getter ? getter.call(obj) : val;
       /* eslint-disable no-self-compare */
+      // 前面能理解，后面不行，难道是设置的是NAN
       if (newVal === value || (newVal !== newVal && value !== value)) {
         return;
       }
       /* eslint-enable no-self-compare */
+      // customSetter好像没有
       if (process.env.NODE_ENV !== "production" && customSetter) {
         customSetter();
       }
       // #7981: for accessor properties without setter
       if (getter && !setter) return;
       if (setter) {
+        // 防止结构获取set导致失去this的指向
         setter.call(obj, newVal);
       } else {
         val = newVal;

@@ -56,7 +56,7 @@ Dep.target = null;
 const targetStack = [];
 
 export function pushTarget(target: ?Watcher) {
-<<<<<<< HEAD
+  // console.log("target", target);
   targetStack.push(target);
   Dep.target = target;
 }
@@ -64,14 +64,4 @@ export function pushTarget(target: ?Watcher) {
 export function popTarget() {
   targetStack.pop();
   Dep.target = targetStack[targetStack.length - 1];
-=======
-  console.log('target', target)
-  targetStack.push(target)
-  Dep.target = target
-}
-
-export function popTarget() {
-  targetStack.pop()
-  Dep.target = targetStack[targetStack.length - 1]
->>>>>>> a39ae8f9b1a2e0d81485dd73bda6bd6db9742a00
 }

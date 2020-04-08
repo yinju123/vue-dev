@@ -7,7 +7,7 @@ import {
   parsePath,
   _Set as Set,
   handleError,
-  noop
+  noop,
 } from "../util/index";
 
 import { traverse } from "./traverse";
@@ -102,6 +102,7 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get() {
+    // 往dep里面填自己
     pushTarget(this);
     let value;
     const vm = this.vm;
