@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vue源码剖析</title>
+    <script src="../../dist/vue.js"></script>
+  </head>
+
+  <body>
+    <div id="demo">
+      <h1>初始化流程</h1>
+      <p>{{userInfo.name}}</p>
+    </div>
+    <script>
+      const app = new Vue({
+        el: "#demo",
+        // template: '<div>template</div>',
+        // template: '#app',
+        // render(h){return h('div','render')},
+        data: { userInfo: { name: "seclusion" } },
+      });
+    </script>
+  </body>
+</html>
