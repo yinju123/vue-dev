@@ -15,6 +15,7 @@ initMixin(Vue);
 stateMixin(Vue);
 eventsMixin(Vue);
 lifecycleMixin(Vue);
+// 初始化render
 renderMixin(Vue);
 
 export default Vue;

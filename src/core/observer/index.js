@@ -41,6 +41,7 @@ export class Observer {
   constructor(value: any) {
     this.value = value;
     this.dep = new Dep();
+    // debugger
     this.vmCount = 0;
     // 使用object.definedProperty 定义属性
     def(value, "__ob__", this);
@@ -158,7 +159,9 @@ export function defineReactive(
     val = obj[key];
   }
 
+  // 属性也是个对象
   let childOb = !shallow && observe(val);
+  console.log("dep", dep, val)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
@@ -170,13 +173,16 @@ export function defineReactive(
         1 lifecycle 里面的声明了mountComponent，里面new watcher
         2 mountComponent实际调用者是runtime/index
       */
+
       if (Dep.target) {
         /* 
-          1 调用watcher的addDep，watcher中添加dep
-          2 
+          1 调用watcher的addDep，执行watcher中添加addDep 添加dep
+          2 watcher中添加addDep 也watcher添加到dep中
+          3 dep可能有很多个，但是watcher只有一个
         */
         dep.depend();
         if (childOb) {
+          // 将Observer里面的dep也加到watcher，不知道为什么。不是defineReactive里面的dep
           childOb.dep.depend();
           if (Array.isArray(value)) {
             dependArray(value);
@@ -240,7 +246,7 @@ export function set(target: Array<any> | Object, key: any, val: any): any {
     process.env.NODE_ENV !== "production" &&
       warn(
         "Avoid adding reactive properties to a Vue instance or its root $data " +
-          "at runtime - declare it upfront in the data option."
+        "at runtime - declare it upfront in the data option."
       );
     return val;
   }
@@ -274,7 +280,7 @@ export function del(target: Array<any> | Object, key: any) {
     process.env.NODE_ENV !== "production" &&
       warn(
         "Avoid deleting properties on a Vue instance or its root $data " +
-          "- just set it to null."
+        "- just set it to null."
       );
     return;
   }

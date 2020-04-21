@@ -86,13 +86,14 @@ export function renderMixin(Vue: Class<Component>) {
   // install runtime convenience helpers
   installRenderHelpers(Vue.prototype);
 
-  Vue.prototype.$nextTick = function(fn: Function) {
+  Vue.prototype.$nextTick = function (fn: Function) {
     return nextTick(fn, this);
   };
 
-  Vue.prototype._render = function(): VNode {
+  Vue.prototype._render = function (): VNode {
     const vm: Component = this;
     const { render, _parentVnode } = vm.$options;
+    debugger
 
     // 这应该是父级的虚拟dom
     if (_parentVnode) {
@@ -145,7 +146,7 @@ export function renderMixin(Vue: Class<Component>) {
       if (process.env.NODE_ENV !== "production" && Array.isArray(vnode)) {
         warn(
           "Multiple root nodes returned from render function. Render function " +
-            "should return a single root node.",
+          "should return a single root node.",
           vm
         );
       }

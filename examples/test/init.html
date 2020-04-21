@@ -1,23 +1,35 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Vue源码剖析</title>
-    <script src="../../dist/vue.js"></script>
-  </head>
 
-  <body>
-    <div id="demo">
-      <h1>初始化流程</h1>
-      <p>{{userInfo.name}}</p>
-    </div>
-    <script>
-      const app = new Vue({
-        el: "#demo",
-        // template: '<div>template</div>',
-        // template: '#app',
-        // render(h){return h('div','render')},
-        data: { userInfo: { name: "seclusion" } },
-      });
-    </script>
-  </body>
+<head>
+  <title>Vue源码剖析</title>
+  <script src="../../dist/vue.js"></script>
+</head>
+
+<body>
+  <div id="demo">
+    <h1>初始化流程</h1>
+    <p id="p1">{{userInfo.name}}</p>
+    <p>{{userInfo.age}}</p>
+  </div>
+  <script>
+
+    // 一个组件一个watcher，data有几个对象，就有几个observers，dep的数量是
+    // 组件*2+observers+data的属性
+    const app = new Vue({
+      el: "#demo",
+      // template: '<div>template</div>',
+      // template: '#app',
+      // render(h){return h('div','render')},
+      data: { userInfo: { name: "seclusion", age: 26 } },
+    });
+
+
+    // setTimeout(() => {
+    //   app.userInfo.name = "yinju"
+    //   app.userInfo.age = 27
+    // }, 1000)
+  </script>
+</body>
+
 </html>
