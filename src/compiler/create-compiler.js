@@ -4,9 +4,9 @@ import { extend } from 'shared/util'
 import { detectErrors } from './error-detector'
 import { createCompileToFunctionFn } from './to-function'
 
-export function createCompilerCreator (baseCompile: Function): Function {
-  return function createCompiler (baseOptions: CompilerOptions) {
-    function compile (
+export function createCompilerCreator(baseCompile: Function): Function {
+  return function createCompiler(baseOptions: CompilerOptions) {
+    function compile(
       template: string,
       options?: CompilerOptions
     ): CompiledResult {
@@ -19,6 +19,7 @@ export function createCompilerCreator (baseCompile: Function): Function {
       }
 
       if (options) {
+        //  true false
         if (process.env.NODE_ENV !== 'production' && options.outputSourceRange) {
           // $flow-disable-line
           const leadingSpaceLength = template.match(/^\s*/)[0].length
@@ -58,6 +59,7 @@ export function createCompilerCreator (baseCompile: Function): Function {
 
       finalOptions.warn = warn
 
+      // finalOptions 是传进来的选项和基础选项的合并
       const compiled = baseCompile(template.trim(), finalOptions)
       if (process.env.NODE_ENV !== 'production') {
         detectErrors(compiled.ast, warn)

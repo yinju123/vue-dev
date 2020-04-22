@@ -9,7 +9,7 @@ type CompiledFunctionResult = {
   staticRenderFns: Array<Function>;
 };
 
-function createFunction (code, errors) {
+function createFunction(code, errors) {
   try {
     return new Function(code)
   } catch (err) {
@@ -18,15 +18,26 @@ function createFunction (code, errors) {
   }
 }
 
-export function createCompileToFunctionFn (compile: Function): Function {
+export function createCompileToFunctionFn(compile: Function): Function {
   const cache = Object.create(null)
 
-  return function compileToFunctions (
+  return function compileToFunctions(
     template: string,
     options?: CompilerOptions,
     vm?: Component
   ): CompiledFunctionResult {
+    // 这里用三个点可以实现
+    /* 
+      outputSourceRange: false,
+      // 属性是否会 编码字符 即 \n 会被编译成&#10;
+      shouldDecodeNewlines: false,
+      // href 是否会被编译
+      shouldDecodeNewlinesForHref:true,
+      delimiters: undefined,
+      comments: undefined
+    */
     options = extend({}, options)
+    // debugger
     const warn = options.warn || baseWarn
     delete options.warn
 
@@ -49,6 +60,7 @@ export function createCompileToFunctionFn (compile: Function): Function {
     }
 
     // check cache
+    // key = template
     const key = options.delimiters
       ? String(options.delimiters) + template
       : template
@@ -57,6 +69,12 @@ export function createCompileToFunctionFn (compile: Function): Function {
     }
 
     // compile
+    // template options 是传入的值
+    /* 
+    主要是执行生成编译器的方法的构造器里面执行的baseCompile
+    他的入场也是template, options，只是在这过程中会做一些处理
+    baseCompile 最主要执行的是parse方法，得到ast
+    */
     const compiled = compile(template, options)
 
     // check compilation errors/tips
