@@ -93,7 +93,6 @@ export function renderMixin(Vue: Class<Component>) {
   Vue.prototype._render = function (): VNode {
     const vm: Component = this;
     const { render, _parentVnode } = vm.$options;
-    debugger
 
     // 这应该是父级的虚拟dom
     if (_parentVnode) {
