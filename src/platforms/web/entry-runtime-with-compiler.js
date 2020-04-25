@@ -73,7 +73,9 @@ Vue.prototype.$mount = function (
         template,
         {
           outputSourceRange: process.env.NODE_ENV !== "production",
+          // 属性是否会 编码字符 即 \n 会被编译成&#10;
           shouldDecodeNewlines,
+          // href 是否会被编译
           shouldDecodeNewlinesForHref,
           delimiters: options.delimiters,
           comments: options.comments,

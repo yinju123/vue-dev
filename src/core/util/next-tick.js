@@ -10,9 +10,13 @@ export let isUsingMicroTask = false
 const callbacks = []
 let pending = false
 
-function flushCallbacks () {
+
+// 执行callbacks里面事件
+function flushCallbacks() {
   pending = false
+  // 这个不知道是为什么
   const copies = callbacks.slice(0)
+  // 清空数组
   callbacks.length = 0
   for (let i = 0; i < copies.length; i++) {
     copies[i]()
@@ -39,6 +43,7 @@ let timerFunc
 // completely stops working after triggering a few times... so, if native
 // Promise is available, we will use it:
 /* istanbul ignore next, $flow-disable-line */
+// isNative 判断是否是原生的构造函数，而不是自己定义的
 if (typeof Promise !== 'undefined' && isNative(Promise)) {
   const p = Promise.resolve()
   timerFunc = () => {
@@ -84,7 +89,7 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
   }
 }
 
-export function nextTick (cb?: Function, ctx?: Object) {
+export function nextTick(cb?: Function, ctx?: Object) {
   let _resolve
   callbacks.push(() => {
     if (cb) {
@@ -97,6 +102,8 @@ export function nextTick (cb?: Function, ctx?: Object) {
       _resolve(ctx)
     }
   })
+  // 等所有的添加任务都完成了，执行callbacks里面所有的事件
+  // 因为添加事件时当前的宏任务，但是timerFunc是微任务或者下个宏任务，所以必定会在所有任务都添加完成了，才会去执行
   if (!pending) {
     pending = true
     timerFunc()

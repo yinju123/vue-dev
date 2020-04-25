@@ -47,6 +47,7 @@ const decodeHTMLCached = cached(he.decode);
 export const emptySlotScopeToken = `_empty_`;
 
 // configurable state
+<<<<<<< HEAD
 export let warn: any;
 let delimiters;
 let transforms;
@@ -56,6 +57,17 @@ let platformIsPreTag;
 let platformMustUseProp;
 let platformGetTagNamespace;
 let maybeComponent;
+=======
+export let warn: any
+let delimiters
+let transforms
+let preTransforms
+let postTransforms
+let platformIsPreTag
+let platformMustUseProp
+let platformGetTagNamespace
+let maybeComponent
+>>>>>>> 3fe3b2c73382a2bccba8800f5496d12f725875c8
 
 export function createASTElement(
   tag: string,
@@ -82,28 +94,35 @@ export function parse(
   template: string,
   options: CompilerOptions
 ): ASTElement | void {
-  warn = options.warn || baseWarn;
+  warn = options.warn || baseWarn
 
-  platformIsPreTag = options.isPreTag || no;
-  platformMustUseProp = options.mustUseProp || no;
-  platformGetTagNamespace = options.getTagNamespace || no;
-  const isReservedTag = options.isReservedTag || no;
-  maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag);
+  console.log("options")
+  //  是否是pre标签
+  platformIsPreTag = options.isPreTag || no
+  platformMustUseProp = options.mustUseProp || no
+  platformGetTagNamespace = options.getTagNamespace || no
+  const isReservedTag = options.isReservedTag || no
+  // console.log("platformIsPreTag", platformIsPreTag)
+  // console.log("platformMustUseProp", platformMustUseProp)
+  // console.log("platformGetTagNamespace", platformGetTagNamespace)
+  // console.log("isReservedTag", isReservedTag)
+  debugger
+  maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
 
-  transforms = pluckModuleFunction(options.modules, "transformNode");
-  preTransforms = pluckModuleFunction(options.modules, "preTransformNode");
-  postTransforms = pluckModuleFunction(options.modules, "postTransformNode");
+  transforms = pluckModuleFunction(options.modules, 'transformNode')
+  preTransforms = pluckModuleFunction(options.modules, 'preTransformNode')
+  postTransforms = pluckModuleFunction(options.modules, 'postTransformNode')
 
-  delimiters = options.delimiters;
+  delimiters = options.delimiters
 
-  const stack = [];
-  const preserveWhitespace = options.preserveWhitespace !== false;
-  const whitespaceOption = options.whitespace;
-  let root;
-  let currentParent;
-  let inVPre = false;
-  let inPre = false;
-  let warned = false;
+  const stack = []
+  const preserveWhitespace = options.preserveWhitespace !== false
+  const whitespaceOption = options.whitespace
+  let root
+  let currentParent
+  let inVPre = false
+  let inPre = false
+  let warned = false
 
   function warnOnce(msg, range) {
     if (!warned) {

@@ -89,12 +89,13 @@ export default class Watcher {
         process.env.NODE_ENV !== "production" &&
           warn(
             `Failed watching path: "${expOrFn}" ` +
-              "Watcher only accepts simple dot-delimited paths. " +
-              "For full control, use a function instead.",
+            "Watcher only accepts simple dot-delimited paths. " +
+            "For full control, use a function instead.",
             vm
           );
       }
     }
+    // this.lazy 是跟before里面一起的 options
     this.value = this.lazy ? undefined : this.get();
   }
 
@@ -173,6 +174,7 @@ export default class Watcher {
     } else if (this.sync) {
       this.run();
     } else {
+      // 将watcher 加入队列
       queueWatcher(this);
     }
   }
