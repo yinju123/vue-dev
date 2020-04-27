@@ -46,30 +46,39 @@ const encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#39|#10|#9);/g
 const isIgnoreNewlineTag = makeMap('pre,textarea', true)
 const shouldIgnoreFirstNewline = (tag, html) => tag && isIgnoreNewlineTag(tag) && html[0] === '\n'
 
-function decodeAttr (value, shouldDecodeNewlines) {
+function decodeAttr(value, shouldDecodeNewlines) {
   const re = shouldDecodeNewlines ? encodedAttrWithNewLines : encodedAttr
   return value.replace(re, match => decodingMap[match])
 }
 
-export function parseHTML (html, options) {
+export function parseHTML(html, options) {
   const stack = []
+  // true
   const expectHTML = options.expectHTML
+  // 一些标签，具体的在看
   const isUnaryTag = options.isUnaryTag || no
+  // 是否是这些标签
+  // 'colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,source'
   const canBeLeftOpenTag = options.canBeLeftOpenTag || no
   let index = 0
   let last, lastTag
+
+  debugger
   while (html) {
     last = html
     // Make sure we're not in a plaintext content element like script/style
+    // 确认不是script/style/textarea 标签
     if (!lastTag || !isPlainTextElement(lastTag)) {
       let textEnd = html.indexOf('<')
       if (textEnd === 0) {
         // Comment:
+        // 判断是否存在注释
         if (comment.test(html)) {
           const commentEnd = html.indexOf('-->')
 
           if (commentEnd >= 0) {
             if (options.shouldKeepComment) {
+              debugger
               options.comment(html.substring(4, commentEnd), index, index + commentEnd + 3)
             }
             advance(commentEnd + 3)
@@ -179,12 +188,12 @@ export function parseHTML (html, options) {
   // Clean up any remaining tags
   parseEndTag()
 
-  function advance (n) {
+  function advance(n) {
     index += n
     html = html.substring(n)
   }
 
-  function parseStartTag () {
+  function parseStartTag() {
     const start = html.match(startTagOpen)
     if (start) {
       const match = {
@@ -209,7 +218,7 @@ export function parseHTML (html, options) {
     }
   }
 
-  function handleStartTag (match) {
+  function handleStartTag(match) {
     const tagName = match.tagName
     const unarySlash = match.unarySlash
 
@@ -252,7 +261,7 @@ export function parseHTML (html, options) {
     }
   }
 
-  function parseEndTag (tagName, start, end) {
+  function parseEndTag(tagName, start, end) {
     let pos, lowerCasedTagName
     if (start == null) start = index
     if (end == null) end = index

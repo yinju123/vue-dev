@@ -85,14 +85,17 @@ export function parse(
   console.log("options")
   //  是否是pre标签
   platformIsPreTag = options.isPreTag || no
+  // 判断标签的必须属性是否存在
   platformMustUseProp = options.mustUseProp || no
+  // tag 是否是svg标签或者等于 math
   platformGetTagNamespace = options.getTagNamespace || no
+  // 是否是html标签或者svg标签
   const isReservedTag = options.isReservedTag || no
   // console.log("platformIsPreTag", platformIsPreTag)
   // console.log("platformMustUseProp", platformMustUseProp)
   // console.log("platformGetTagNamespace", platformGetTagNamespace)
   // console.log("isReservedTag", isReservedTag)
-  debugger
+
   maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
 
   transforms = pluckModuleFunction(options.modules, 'transformNode')
@@ -102,6 +105,7 @@ export function parse(
   delimiters = options.delimiters
 
   const stack = []
+  // false
   const preserveWhitespace = options.preserveWhitespace !== false
   const whitespaceOption = options.whitespace
   let root
@@ -303,7 +307,6 @@ export function parse(
         closeElement(element)
       }
     },
-
     end(tag, start, end) {
       const element = stack[stack.length - 1]
       // pop stack
@@ -401,6 +404,7 @@ export function parse(
         }
         currentParent.children.push(child)
       }
+      // debugger
     }
   })
   return root

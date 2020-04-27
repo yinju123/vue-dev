@@ -9,6 +9,7 @@
 <body>
   <div id="demo">
     <h1>初始化流程</h1>
+    <!-- 注释会保存下来吗 -->
     <p id="p1">{{userInfo.name}}</p>
     <p>{{userInfo.age}}</p>
   </div>
@@ -26,6 +27,8 @@
       // template: '<div>template</div>',
       // template: '#app',
       // render(h){return h('div','render')},
+      // 保留注释
+      comments: true,
       data: { userInfo: { name: "seclusion", age: 26 } },
     });
 
