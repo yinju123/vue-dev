@@ -9,23 +9,25 @@
 <body>
   <div id="demo">
     <h1>初始化流程</h1>
+    <!-- 这是注释 -->
+    <a ? />
     <p id="p1">{{userInfo.name}}</p>
     <p>{{userInfo.age}}</p>
   </div>
   <script>
-    let a = {
-      name: "seclusion",
-      age: 27,
-    };
-    let b = Object.create(a);
-    console.log("222", a.name);
     // 一个组件一个watcher，data有几个对象，就有几个observers，dep的数量是
     // 组件*2+observers+data的属性
+    var str = `asfsd  />`;
+    console.log("str", str)
+    var patt1 = /\s*(\/?)>/
+    let a = str.match(patt1)
+    console.log("aaaaaa", a)
     const app = new Vue({
       el: "#demo",
       // template: '<div>template</div>',
       // template: '#app',
       // render(h){return h('div','render')},
+      comments: true,
       data: { userInfo: { name: "seclusion", age: 26 } },
     });
 

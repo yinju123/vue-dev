@@ -62,8 +62,6 @@ export function parseHTML(html, options) {
   const canBeLeftOpenTag = options.canBeLeftOpenTag || no
   let index = 0
   let last, lastTag
-
-  debugger
   while (html) {
     last = html
     // Make sure we're not in a plaintext content element like script/style
@@ -72,21 +70,19 @@ export function parseHTML(html, options) {
       let textEnd = html.indexOf('<')
       if (textEnd === 0) {
         // Comment:
-        // 判断是否存在注释
+        // 判断是否存在注释,并且是以注释开头的
         if (comment.test(html)) {
           const commentEnd = html.indexOf('-->')
-
           if (commentEnd >= 0) {
             if (options.shouldKeepComment) {
-              debugger
               options.comment(html.substring(4, commentEnd), index, index + commentEnd + 3)
             }
             advance(commentEnd + 3)
             continue
           }
         }
-
         // http://en.wikipedia.org/wiki/Conditional_comment#Downlevel-revealed_conditional_comment
+        // 这里应该是IE的版本声明
         if (conditionalComment.test(html)) {
           const conditionalEnd = html.indexOf(']>')
 
@@ -114,6 +110,7 @@ export function parseHTML(html, options) {
 
         // Start tag:
         const startTagMatch = parseStartTag()
+        // debugger
         if (startTagMatch) {
           handleStartTag(startTagMatch)
           if (shouldIgnoreFirstNewline(startTagMatch.tagName, html)) {
@@ -188,12 +185,15 @@ export function parseHTML(html, options) {
   // Clean up any remaining tags
   parseEndTag()
 
+  // 计算新的位置，并取出没有标记的标签
   function advance(n) {
     index += n
     html = html.substring(n)
   }
 
+  // 设置match 获取标签的起始位置，结束位置，所有属性
   function parseStartTag() {
+    // start:<div
     const start = html.match(startTagOpen)
     if (start) {
       const match = {
@@ -213,8 +213,10 @@ export function parseHTML(html, options) {
         match.unarySlash = end[1]
         advance(end[0].length)
         match.end = index
+        debugger
         return match
       }
+
     }
   }
 

@@ -309,6 +309,7 @@ export function parse(
 
       if (!unary) {
         currentParent = element;
+        // console.log("这里开始赋值 currentParent")
         stack.push(element);
       } else {
         closeElement(element);
