@@ -9,17 +9,16 @@
 <body>
   <div id="demo">
     <h1>初始化流程</h1>
-    <!-- 注释会保存下来吗 -->
     <p id="p1">{{userInfo.name}}</p>
     <p>{{userInfo.age}}</p>
   </div>
   <script>
     let a = {
       name: "seclusion",
-      age: 27
-    }
-    let b = Object.create(a)
-    console.log("222", a.name)
+      age: 27,
+    };
+    let b = Object.create(a);
+    console.log("222", a.name);
     // 一个组件一个watcher，data有几个对象，就有几个observers，dep的数量是
     // 组件*2+observers+data的属性
     const app = new Vue({
@@ -27,16 +26,13 @@
       // template: '<div>template</div>',
       // template: '#app',
       // render(h){return h('div','render')},
-      // 保留注释
-      comments: true,
       data: { userInfo: { name: "seclusion", age: 26 } },
     });
 
-
-    // setTimeout(() => {
-    //   app.userInfo.name = "yinju"
-    //   app.userInfo.age = 27
-    // }, 1000)
+      // setTimeout(() => {
+      //   app.userInfo.name = "yinju"
+      //   app.userInfo.age = 27
+      // }, 1000)
   </script>
 </body>
 

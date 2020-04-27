@@ -5,7 +5,7 @@ import {
   nextTick,
   emptyObject,
   handleError,
-  defineReactive
+  defineReactive,
 } from "../util/index";
 
 import { createElement } from "../vdom/create-element";
@@ -93,7 +93,6 @@ export function renderMixin(Vue: Class<Component>) {
   Vue.prototype._render = function (): VNode {
     const vm: Component = this;
     const { render, _parentVnode } = vm.$options;
-
     // 这应该是父级的虚拟dom
     if (_parentVnode) {
       vm.$scopedSlots = normalizeScopedSlots(

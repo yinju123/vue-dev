@@ -9,10 +9,10 @@ import { query } from "./util/index";
 import { compileToFunctions } from "./compiler/index";
 import {
   shouldDecodeNewlines,
-  shouldDecodeNewlinesForHref
+  shouldDecodeNewlinesForHref,
 } from "./util/compat";
 
-const idToTemplate = cached(id => {
+const idToTemplate = cached((id) => {
   const el = query(id);
   return el && el.innerHTML;
 });
@@ -40,7 +40,9 @@ Vue.prototype.$mount = function (
     let template = options.template;
     if (template) {
       if (typeof template === "string") {
+        // 如果templates是个id
         if (template.charAt(0) === "#") {
+          // idToTemplate 返回id的innerHTML
           template = idToTemplate(template);
           /* istanbul ignore if */
           if (process.env.NODE_ENV !== "production" && !template) {
@@ -76,10 +78,11 @@ Vue.prototype.$mount = function (
           // href 是否会被编译
           shouldDecodeNewlinesForHref,
           delimiters: options.delimiters,
-          comments: options.comments
+          comments: options.comments,
         },
         this
       );
+      debugger;
       options.render = render;
       options.staticRenderFns = staticRenderFns;
 
