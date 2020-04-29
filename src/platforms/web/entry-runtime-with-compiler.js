@@ -78,11 +78,12 @@ Vue.prototype.$mount = function (
           // href 是否会被编译
           shouldDecodeNewlinesForHref,
           delimiters: options.delimiters,
+          // 是否保留注释
           comments: options.comments,
         },
         this
       );
-      debugger;
+      // debugger;
       options.render = render;
       options.staticRenderFns = staticRenderFns;
 

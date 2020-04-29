@@ -161,7 +161,6 @@ export function defineReactive(
 
   // 属性也是个对象
   let childOb = !shallow && observe(val);
-  console.log("dep", dep, val)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,

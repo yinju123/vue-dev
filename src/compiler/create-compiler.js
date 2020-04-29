@@ -21,6 +21,7 @@ export function createCompilerCreator(baseCompile: Function): Function {
       options?: CompilerOptions
     ): CompiledResult {
       const finalOptions = Object.create(baseOptions);
+      // debugger
       const errors = [];
       const tips = [];
 

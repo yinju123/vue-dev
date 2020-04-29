@@ -66,6 +66,7 @@ export function createASTElement(
     type: 1,
     tag,
     attrsList: attrs,
+    // 属性名和属性值
     attrsMap: makeAttrsMap(attrs),
     rawAttrsMap: {},
     parent,
@@ -83,8 +84,6 @@ export function parse(
   options: CompilerOptions
 ): ASTElement | void {
   warn = options.warn || baseWarn
-
-  console.log("options")
   //  是否是pre标签
   platformIsPreTag = options.isPreTag || no
   // 判断标签的必须属性是否存在
@@ -93,10 +92,6 @@ export function parse(
   platformGetTagNamespace = options.getTagNamespace || no
   // 是否是html标签或者svg标签
   const isReservedTag = options.isReservedTag || no
-  // console.log("platformIsPreTag", platformIsPreTag)
-  // console.log("platformMustUseProp", platformMustUseProp)
-  // console.log("platformGetTagNamespace", platformGetTagNamespace)
-  // console.log("isReservedTag", isReservedTag)
 
   maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
 
@@ -225,32 +220,55 @@ export function parse(
     shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref,
     shouldKeepComment: options.comments,
     outputSourceRange: options.outputSourceRange,
+    // 获取标签上
     start(tag, attrs, unary, start, end) {
       // check namespace.
       // inherit parent ns if there is one
       const ns =
         (currentParent && currentParent.ns) || platformGetTagNamespace(tag);
-
+      // debugger
       // handle IE svg bug
       /* istanbul ignore if */
       if (isIE && ns === "svg") {
         attrs = guardIESVGBug(attrs);
       }
 
+      // 获取初始属性
       let element: ASTElement = createASTElement(tag, attrs, currentParent);
       if (ns) {
         element.ns = ns;
       }
 
       if (process.env.NODE_ENV !== "production") {
+        // 判断是不是生产环境
         if (options.outputSourceRange) {
           element.start = start;
           element.end = end;
+          /* 
+            {
+              :m:{
+                end: 36
+                name: ":m"
+                start: 15
+                value: "{{userInfo.age}}"
+              },
+              @click:{
+                end: 50
+                name: "@click"
+                start: 37
+                value: "getA"
+              }
+            }
+
+          */
           element.rawAttrsMap = element.attrsList.reduce((cumulated, attr) => {
             cumulated[attr.name] = attr;
             return cumulated;
           }, {});
         }
+        // debugger
+
+        // 特殊字符的属性
         attrs.forEach((attr) => {
           if (invalidAttributeRE.test(attr.name)) {
             warn(

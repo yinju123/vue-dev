@@ -53,9 +53,9 @@ function decodeAttr(value, shouldDecodeNewlines) {
 
 export function parseHTML(html, options) {
   const stack = []
-  // true
+  // true baseOptions 中设置的expectHTML
   const expectHTML = options.expectHTML
-  // 一些标签，具体的在看
+  // 是否是单标签，比如link meta
   const isUnaryTag = options.isUnaryTag || no
   // 是否是这些标签
   // 'colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,source'
@@ -203,6 +203,7 @@ export function parseHTML(html, options) {
       }
       advance(start[0].length)
       let end, attr
+      // 把属性切割出来，标出属性的起始位置，结束位置
       while (!(end = html.match(startTagClose)) && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
         attr.start = index
         advance(attr[0].length)
@@ -213,7 +214,7 @@ export function parseHTML(html, options) {
         match.unarySlash = end[1]
         advance(end[0].length)
         match.end = index
-        debugger
+        // debugger
         return match
       }
 
@@ -224,6 +225,7 @@ export function parseHTML(html, options) {
     const tagName = match.tagName
     const unarySlash = match.unarySlash
 
+    // 这部分等待，暂时不知道干什么的
     if (expectHTML) {
       if (lastTag === 'p' && isNonPhrasingTag(tagName)) {
         parseEndTag(lastTag)
@@ -233,20 +235,28 @@ export function parseHTML(html, options) {
       }
     }
 
+    // 不知道为什么要用或，是用为自定义组件，可以用单标签写法吗
+    // 判断是都是单标签， unary："/"" 
     const unary = isUnaryTag(tagName) || !!unarySlash
 
     const l = match.attrs.length
     const attrs = new Array(l)
     for (let i = 0; i < l; i++) {
+      // 0 是匹配到的字符串 1是属性 2 是= 345 可能是值
       const args = match.attrs[i]
+      // debugger
+      // 获取标签上属性，绑定的值, 或者是绑定的方法
       const value = args[3] || args[4] || args[5] || ''
       const shouldDecodeNewlines = tagName === 'a' && args[1] === 'href'
         ? options.shouldDecodeNewlinesForHref
         : options.shouldDecodeNewlines
       attrs[i] = {
         name: args[1],
+        // 有可能是转义字符，将它换成真正的字符
         value: decodeAttr(value, shouldDecodeNewlines)
       }
+      // debugger
+      // 这两个的值都是process.env.NODE_ENV !== 'production' 
       if (process.env.NODE_ENV !== 'production' && options.outputSourceRange) {
         attrs[i].start = args.start + args[0].match(/^\s*/).length
         attrs[i].end = args.end
