@@ -74,7 +74,6 @@ export function createCompilerCreator(baseCompile: Function): Function {
       }
 
       finalOptions.warn = warn;
-
       // finalOptions 是传进来的选项和基础选项的合并
       const compiled = baseCompile(template.trim(), finalOptions);
       if (process.env.NODE_ENV !== "production") {

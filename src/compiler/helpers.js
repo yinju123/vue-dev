@@ -111,7 +111,7 @@ export function addHandler(
   ) {
     warn(
       "passive and prevent can't be used together. " +
-        "Passive handler can't prevent default event.",
+      "Passive handler can't prevent default event.",
       range
     );
   }
@@ -188,6 +188,7 @@ export function getBindingAttr(
   name: string,
   getStatic?: boolean
 ): ?string {
+  // 获取到val
   const dynamicValue =
     getAndRemoveAttr(el, ":" + name) || getAndRemoveAttr(el, "v-bind:" + name);
   if (dynamicValue != null) {

@@ -7,23 +7,42 @@
 </head>
 
 <body>
-  <div id="demo" :m="{{userInfo.age}}" @click="getA">
+  <div id="demo" @click="getA">
+    <!-- <sku /> -->
     <h1>初始化流程</h1>
     <!-- 这是注释 -->
     <p id="p1">{{userInfo.name}}</p>
     <p>{{userInfo.age}}</p>
+    <div v-if="a">{{b}}</div>
+
   </div>
   <script>
     // 一个组件一个watcher，data有几个对象，就有几个observers，dep的数量是
     // 组件*2+observers+data的属性
-    let reg = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
     const app = new Vue({
       el: "#demo",
       // template: '<div>template</div>',
       // template: '#app',
       // render(h){return h('div','render')},
       comments: true,
-      data: { userInfo: { name: "seclusion", age: 26 } },
+      data: {
+        userInfo: {
+          name: "seclusion",
+          age: 26
+        },
+        arr: [
+          { num: 1 },
+          { num: 2 }
+        ],
+        a: 1,
+        b: 2,
+        message: "hello"
+      },
+      components: {
+        sku: {
+          template: `<div>这是sku</div>`
+        }
+      },
       methods: {
         getA() {
           console.log("getA")

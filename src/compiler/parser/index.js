@@ -65,6 +65,7 @@ export function createASTElement(
   return {
     type: 1,
     tag,
+    // 数组， 里面是对象， name value
     attrsList: attrs,
     // 属性名和属性值
     attrsMap: makeAttrsMap(attrs),
@@ -94,13 +95,12 @@ export function parse(
   const isReservedTag = options.isReservedTag || no
 
   maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
-
   transforms = pluckModuleFunction(options.modules, 'transformNode')
   preTransforms = pluckModuleFunction(options.modules, 'preTransformNode')
   postTransforms = pluckModuleFunction(options.modules, 'postTransformNode')
 
   delimiters = options.delimiters
-
+  // debugger
   const stack = []
   // false
   const preserveWhitespace = options.preserveWhitespace !== false
@@ -235,10 +235,10 @@ export function parse(
 
       // 获取初始属性
       let element: ASTElement = createASTElement(tag, attrs, currentParent);
+      // console.log("element", element)
       if (ns) {
         element.ns = ns;
       }
-
       if (process.env.NODE_ENV !== "production") {
         // 判断是不是生产环境
         if (options.outputSourceRange) {
@@ -266,6 +266,7 @@ export function parse(
             return cumulated;
           }, {});
         }
+        // console.log("element", element)
         // debugger
 
         // 特殊字符的属性
@@ -282,7 +283,7 @@ export function parse(
           }
         });
       }
-
+      // 禁止表示，style， scrpit标签
       if (isForbiddenTag(element) && !isServerRendering()) {
         element.forbidden = true;
         process.env.NODE_ENV !== "production" &&
@@ -296,16 +297,19 @@ export function parse(
       }
 
       // apply pre-transforms
+      // 从代码层次来看，是针对input标签处理
       for (let i = 0; i < preTransforms.length; i++) {
         element = preTransforms[i](element, options) || element;
       }
 
+      // 标签是否存在v-pre 属性
       if (!inVPre) {
         processPre(element);
         if (element.pre) {
           inVPre = true;
         }
       }
+      // 判断标签名 是否是pre
       if (platformIsPreTag(element.tag)) {
         inPre = true;
       }
@@ -313,8 +317,24 @@ export function parse(
         processRawAttrs(element);
       } else if (!element.processed) {
         // structural directives
+        // for if once 指令
+        /* 
+          {
+            for: arr,
+            alias: item, 
+            iterator1: index
+          }
+        */
         processFor(element);
+        // 添加if else elif属性，如果是if，添加ifConditions，里面是
+        /* 
+          {
+            exp: exp,
+            block: el,
+          }
+        */
         processIf(element);
+        // 给element添加once 属性
         processOnce(element);
       }
 
@@ -325,9 +345,9 @@ export function parse(
         }
       }
 
+      // 应该是单元素标签
       if (!unary) {
         currentParent = element;
-        // console.log("这里开始赋值 currentParent")
         stack.push(element);
       } else {
         closeElement(element);
@@ -440,7 +460,6 @@ export function parse(
         }
         currentParent.children.push(child);
       }
-      // debugger
     }
   })
   return root
@@ -534,7 +553,15 @@ function processRef(el) {
 
 export function processFor(el: ASTElement) {
   let exp;
+  // 获取属性值，并把attrsList该属性删除
   if ((exp = getAndRemoveAttr(el, "v-for"))) {
+    /* 
+      {
+        for: arr,
+        alias: item, 
+        iterator1: index
+      }
+    */
     const res = parseFor(exp);
     if (res) {
       extend(el, res);
@@ -552,13 +579,18 @@ type ForParseResult = {
 };
 
 export function parseFor(exp: string): ?ForParseResult {
+  // 第一个子集是(下标1) in前面的内容(item, index)
+  // 第二个内容是in(下标2) 后面的内容(arr)
   const inMatch = exp.match(forAliasRE);
   if (!inMatch) return;
   const res = {};
   res.for = inMatch[2].trim();
+  // 去掉括号
   const alias = inMatch[1].trim().replace(stripParensRE, "");
+  // 匹配逗号后面你的内容，得到 index
   const iteratorMatch = alias.match(forIteratorRE);
   if (iteratorMatch) {
+    // 去掉, index获取到item
     res.alias = alias.replace(forIteratorRE, "").trim();
     res.iterator1 = iteratorMatch[1].trim();
     if (iteratorMatch[2]) {

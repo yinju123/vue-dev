@@ -57,6 +57,7 @@ export function parseHTML(html, options) {
   const expectHTML = options.expectHTML
   // 是否是单标签，比如link meta
   const isUnaryTag = options.isUnaryTag || no
+  // debugger
   // 是否是这些标签
   // 'colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,source'
   const canBeLeftOpenTag = options.canBeLeftOpenTag || no
@@ -217,7 +218,6 @@ export function parseHTML(html, options) {
         // debugger
         return match
       }
-
     }
   }
 
@@ -247,6 +247,7 @@ export function parseHTML(html, options) {
       // debugger
       // 获取标签上属性，绑定的值, 或者是绑定的方法
       const value = args[3] || args[4] || args[5] || ''
+      // 都是false
       const shouldDecodeNewlines = tagName === 'a' && args[1] === 'href'
         ? options.shouldDecodeNewlinesForHref
         : options.shouldDecodeNewlines
