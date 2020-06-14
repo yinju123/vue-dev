@@ -158,7 +158,6 @@ export function defineReactive(
   if ((!getter || setter) && arguments.length === 2) {
     val = obj[key];
   }
-
   // 属性也是个对象
   let childOb = !shallow && observe(val);
   Object.defineProperty(obj, key, {
@@ -172,7 +171,6 @@ export function defineReactive(
         1 lifecycle 里面的声明了mountComponent，里面new watcher
         2 mountComponent实际调用者是runtime/index
       */
-
       if (Dep.target) {
         /* 
           1 调用watcher的addDep，执行watcher中添加addDep 添加dep

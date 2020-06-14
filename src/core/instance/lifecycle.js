@@ -143,7 +143,8 @@ export function mountComponent(
   hydrating?: boolean
 ): Component {
   vm.$el = el;
-
+  // 存在，不知道什么加上的
+  // debugger
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode;
     if (process.env.NODE_ENV !== "production") {
@@ -155,8 +156,8 @@ export function mountComponent(
       ) {
         warn(
           "You are using the runtime-only build of Vue where the template " +
-            "compiler is not available. Either pre-compile the templates into " +
-            "render functions, or use the compiler-included build.",
+          "compiler is not available. Either pre-compile the templates into " +
+          "render functions, or use the compiler-included build.",
           vm
         );
       } else {

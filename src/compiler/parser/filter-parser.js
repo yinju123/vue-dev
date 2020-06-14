@@ -2,7 +2,8 @@
 
 const validDivisionCharRE = /[\w).+\-_$\]]/
 
-export function parseFilters (exp: string): string {
+// exp
+export function parseFilters(exp: string): string {
   let inSingle = false
   let inDouble = false
   let inTemplateString = false
@@ -12,7 +13,7 @@ export function parseFilters (exp: string): string {
   let paren = 0
   let lastFilterIndex = 0
   let c, prev, i, expression, filters
-
+  // console.log("exp111", exp)
   for (i = 0; i < exp.length; i++) {
     prev = c
     c = exp.charCodeAt(i)
@@ -49,7 +50,7 @@ export function parseFilters (exp: string): string {
         case 0x7B: curly++; break                 // {
         case 0x7D: curly--; break                 // }
       }
-      if (c === 0x2f) { // /
+      if (c === 0x2f) { // 
         let j = i - 1
         let p
         // find first non-whitespace prev char
@@ -70,7 +71,7 @@ export function parseFilters (exp: string): string {
     pushFilter()
   }
 
-  function pushFilter () {
+  function pushFilter() {
     (filters || (filters = [])).push(exp.slice(lastFilterIndex, i).trim())
     lastFilterIndex = i + 1
   }
@@ -84,7 +85,7 @@ export function parseFilters (exp: string): string {
   return expression
 }
 
-function wrapFilter (exp: string, filter: string): string {
+function wrapFilter(exp: string, filter: string): string {
   const i = filter.indexOf('(')
   if (i < 0) {
     // _f: resolveFilter

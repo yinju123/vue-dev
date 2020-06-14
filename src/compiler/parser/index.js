@@ -65,6 +65,7 @@ export function createASTElement(
   return {
     type: 1,
     tag,
+    // 数组， 里面是对象， name value
     attrsList: attrs,
     // 属性名和属性值
     attrsMap: makeAttrsMap(attrs),
@@ -93,17 +94,14 @@ export function parse(
   // 是否是html标签或者svg标签
   const isReservedTag = options.isReservedTag || no;
 
-  maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag);
+  maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
+  transforms = pluckModuleFunction(options.modules, 'transformNode')
+  preTransforms = pluckModuleFunction(options.modules, 'preTransformNode')
+  postTransforms = pluckModuleFunction(options.modules, 'postTransformNode')
 
-  // 获取解析class，style 的方法 返回的数组，第一个是元素是解析class 的方法，第二个是解析style的方法
-  transforms = pluckModuleFunction(options.modules, "transformNode");
-  // 获取解析input v-for v-if v-bind等的方法
-  preTransforms = pluckModuleFunction(options.modules, "preTransformNode");
-  // 空数组
-  postTransforms = pluckModuleFunction(options.modules, "postTransformNode");
-  delimiters = options.delimiters;
-
-  const stack = [];
+  delimiters = options.delimiters
+  // debugger
+  const stack = []
   // false
   const preserveWhitespace = options.preserveWhitespace !== false;
   const whitespaceOption = options.whitespace;
@@ -139,8 +137,8 @@ export function parse(
       } else if (process.env.NODE_ENV !== "production") {
         warnOnce(
           `Component template should contain exactly one root element. ` +
-            `If you are using v-if on multiple elements, ` +
-            `use v-else-if to chain them instead.`,
+          `If you are using v-if on multiple elements, ` +
+          `use v-else-if to chain them instead.`,
           { start: element.start }
         );
       }
@@ -201,14 +199,14 @@ export function parse(
     if (el.tag === "slot" || el.tag === "template") {
       warnOnce(
         `Cannot use <${el.tag}> as component root element because it may ` +
-          "contain multiple nodes.",
+        "contain multiple nodes.",
         { start: el.start }
       );
     }
     if (el.attrsMap.hasOwnProperty("v-for")) {
       warnOnce(
         "Cannot use v-for on stateful component root element because " +
-          "it renders multiple elements.",
+        "it renders multiple elements.",
         el.rawAttrsMap["v-for"]
       );
     }
@@ -251,11 +249,10 @@ export function parse(
       
       */
       let element: ASTElement = createASTElement(tag, attrs, currentParent);
-
+      // console.log("element", element)
       if (ns) {
         element.ns = ns;
       }
-
       if (process.env.NODE_ENV !== "production") {
         // 判断是不是生产环境
         if (options.outputSourceRange) {
@@ -283,6 +280,7 @@ export function parse(
             return cumulated;
           }, {});
         }
+        // console.log("element", element)
         // debugger
 
         // 特殊字符的属性
@@ -290,7 +288,7 @@ export function parse(
           if (invalidAttributeRE.test(attr.name)) {
             warn(
               `Invalid dynamic argument expression: attribute names cannot contain ` +
-                `spaces, quotes, <, >, / or =.`,
+              `spaces, quotes, <, >, / or =.`,
               {
                 start: attr.start + attr.name.indexOf(`[`),
                 end: attr.start + attr.name.length,
@@ -299,25 +297,26 @@ export function parse(
           }
         });
       }
-
-      // 是否是style标签或者script标签
+      // 禁止表示，style， scrpit标签
       if (isForbiddenTag(element) && !isServerRendering()) {
         element.forbidden = true;
         process.env.NODE_ENV !== "production" &&
           warn(
             "Templates should only be responsible for mapping the state to the " +
-              "UI. Avoid placing tags with side-effects in your templates, such as " +
-              `<${tag}>` +
-              ", as they will not be parsed.",
+            "UI. Avoid placing tags with side-effects in your templates, such as " +
+            `<${tag}>` +
+            ", as they will not be parsed.",
             { start: element.start }
           );
       }
 
       // apply pre-transforms
+      // 从代码层次来看，是针对input标签处理
       for (let i = 0; i < preTransforms.length; i++) {
         element = preTransforms[i](element, options) || element;
       }
 
+      // 标签是否存在v-pre 属性
       if (!inVPre) {
         // 判断有没有v-pre
         processPre(element);
@@ -325,7 +324,7 @@ export function parse(
           inVPre = true;
         }
       }
-      // 是否是pre标签
+      // 判断标签名 是否是pre
       if (platformIsPreTag(element.tag)) {
         inPre = true;
       }
@@ -334,27 +333,24 @@ export function parse(
         processRawAttrs(element);
       } else if (!element.processed) {
         // structural directives
-        // 解析v-for
+        // for if once 指令
         /* 
           {
-            for: list,
-            alias: item,
-            iterator1?: index,
-            iterator2?: a,
+            for: arr,
+            alias: item, 
+            iterator1: index
           }
         */
         processFor(element);
+        // 添加if else elif属性，如果是if，添加ifConditions，里面是
         /* 
-        
-        element上添加ifConditions，格式为 
-        {
-          exp: exp,
-          block: el,
-        }
-        判断v-if v-else v-else-if 是否存在
+          {
+            exp: exp,
+            block: el,
+          }
         */
         processIf(element);
-        // 判断v-once 是否存在，如果存在element.once=true
+        // 给element添加once 属性
         processOnce(element);
       }
 
@@ -367,10 +363,9 @@ export function parse(
         }
       }
 
-      // 判断是否是结束标签
+      // 应该是单元素标签
       if (!unary) {
         currentParent = element;
-        // 将所有解析完的起始标签都保存
         stack.push(element);
       } else {
         closeElement(element);
@@ -483,10 +478,9 @@ export function parse(
         }
         currentParent.children.push(child);
       }
-      // debugger
-    },
-  });
-  return root;
+    }
+  })
+  return root
 }
 
 function processPre(el) {
@@ -557,7 +551,7 @@ function processKey(el) {
         ) {
           warn(
             `Do not use v-for index as key on <transition-group> children, ` +
-              `this is the same as not using keys.`,
+            `this is the same as not using keys.`,
             getRawBindingAttr(el, "key"),
             true /* tip */
           );
@@ -578,15 +572,14 @@ function processRef(el) {
 
 export function processFor(el: ASTElement) {
   let exp;
+  // 获取属性值，并把attrsList该属性删除
   if ((exp = getAndRemoveAttr(el, "v-for"))) {
     /* 
       {
-        for: list,
-        alias: item,
-        iterator1?: index,
-        iterator2?: a,
+        for: arr,
+        alias: item, 
+        iterator1: index
       }
-    
     */
     const res = parseFor(exp);
     if (res) {
@@ -606,21 +599,18 @@ type ForParseResult = {
 };
 
 export function parseFor(exp: string): ?ForParseResult {
-  // 获取v-for in 前后的表达式
-  /* 
-    v-for="(item, index) in 5"
-    inMatch[1]: (item, index)
-    inMatch[2]: 5
-  */
+  // 第一个子集是(下标1) in前面的内容(item, index)
+  // 第二个内容是in(下标2) 后面的内容(arr)
   const inMatch = exp.match(forAliasRE);
   if (!inMatch) return;
   const res = {};
   res.for = inMatch[2].trim();
   // 去掉括号
   const alias = inMatch[1].trim().replace(stripParensRE, "");
-  // 逗号之后的内容
+  // 匹配逗号后面你的内容，得到 index
   const iteratorMatch = alias.match(forIteratorRE);
   if (iteratorMatch) {
+    // 去掉, index获取到item
     res.alias = alias.replace(forIteratorRE, "").trim();
     res.iterator1 = iteratorMatch[1].trim();
     if (iteratorMatch[2]) {
@@ -661,7 +651,7 @@ function processIfConditions(el, parent) {
   } else if (process.env.NODE_ENV !== "production") {
     warn(
       `v-${el.elseif ? 'else-if="' + el.elseif + '"' : "else"} ` +
-        `used on element <${el.tag}> without corresponding v-if.`,
+      `used on element <${el.tag}> without corresponding v-if.`,
       el.rawAttrsMap[el.elseif ? "v-else-if" : "v-else"]
     );
   }
@@ -676,7 +666,7 @@ function findPrevElement(children: Array<any>): ASTElement | void {
       if (process.env.NODE_ENV !== "production" && children[i].text !== " ") {
         warn(
           `text "${children[i].text.trim()}" between v-if and v-else(-if) ` +
-            `will be ignored.`,
+          `will be ignored.`,
           children[i]
         );
       }
@@ -709,9 +699,9 @@ function processSlotContent(el) {
     if (process.env.NODE_ENV !== "production" && slotScope) {
       warn(
         `the "scope" attribute for scoped slots have been deprecated and ` +
-          `replaced by "slot-scope" since 2.5. The new "slot-scope" attribute ` +
-          `can also be used on plain elements in addition to <template> to ` +
-          `denote scoped slots.`,
+        `replaced by "slot-scope" since 2.5. The new "slot-scope" attribute ` +
+        `can also be used on plain elements in addition to <template> to ` +
+        `denote scoped slots.`,
         el.rawAttrsMap["scope"],
         true
       );
@@ -722,8 +712,8 @@ function processSlotContent(el) {
     if (process.env.NODE_ENV !== "production" && el.attrsMap["v-for"]) {
       warn(
         `Ambiguous combined usage of slot-scope and v-for on <${el.tag}> ` +
-          `(v-for takes higher priority). Use a wrapper <template> for the ` +
-          `scoped slot to make it clearer.`,
+        `(v-for takes higher priority). Use a wrapper <template> for the ` +
+        `scoped slot to make it clearer.`,
         el.rawAttrsMap["slot-scope"],
         true
       );
@@ -758,7 +748,7 @@ function processSlotContent(el) {
           if (el.parent && !maybeComponent(el.parent)) {
             warn(
               `<template v-slot> can only appear at the root level inside ` +
-                `the receiving component`,
+              `the receiving component`,
               el
             );
           }
@@ -785,7 +775,7 @@ function processSlotContent(el) {
           if (el.scopedSlots) {
             warn(
               `To avoid scope ambiguity, the default slot should also use ` +
-                `<template> syntax when there are other named slots.`,
+              `<template> syntax when there are other named slots.`,
               slotBinding
             );
           }
@@ -827,9 +817,9 @@ function getSlotName(binding) {
   }
   return dynamicArgRE.test(name)
     ? // dynamic [name]
-      { name: name.slice(1, -1), dynamic: true }
+    { name: name.slice(1, -1), dynamic: true }
     : // static name
-      { name: `"${name}"`, dynamic: false };
+    { name: `"${name}"`, dynamic: false };
 }
 
 // handle <slot/> outlets
@@ -839,8 +829,8 @@ function processSlotOutlet(el) {
     if (process.env.NODE_ENV !== "production" && el.key) {
       warn(
         `\`key\` does not work on <slot> because slots are abstract outlets ` +
-          `and can possibly expand into multiple elements. ` +
-          `Use the key on a wrapping element instead.`,
+        `and can possibly expand into multiple elements. ` +
+        `Use the key on a wrapping element instead.`,
         getRawBindingAttr(el, "key")
       );
     }
@@ -988,9 +978,9 @@ function processAttrs(el) {
         if (res) {
           warn(
             `${name}="${value}": ` +
-              "Interpolation inside attributes has been removed. " +
-              "Use v-bind or the colon shorthand instead. For example, " +
-              'instead of <div id="{{ val }}">, use <div :id="val">.',
+            "Interpolation inside attributes has been removed. " +
+            "Use v-bind or the colon shorthand instead. For example, " +
+            'instead of <div id="{{ val }}">, use <div :id="val">.',
             list[i]
           );
         }
@@ -1082,10 +1072,10 @@ function checkForAliasModel(el, value) {
     if (_el.for && _el.alias === value) {
       warn(
         `<${el.tag} v-model="${value}">: ` +
-          `You are binding v-model directly to a v-for iteration alias. ` +
-          `This will not be able to modify the v-for source array because ` +
-          `writing to the alias is like modifying a function local variable. ` +
-          `Consider using an array of objects and use v-model on an object property instead.`,
+        `You are binding v-model directly to a v-for iteration alias. ` +
+        `This will not be able to modify the v-for source array because ` +
+        `writing to the alias is like modifying a function local variable. ` +
+        `Consider using an array of objects and use v-model on an object property instead.`,
         el.rawAttrsMap["v-model"]
       );
     }

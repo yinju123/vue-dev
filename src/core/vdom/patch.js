@@ -345,7 +345,7 @@ export function createPatchFunction(backend) {
   }
 
   function invokeDestroyHook(vnode) {
-    console.log(vnode)
+    // console.log(vnode)
     let i, j
     const data = vnode.data
     if (isDef(data)) {
@@ -699,7 +699,7 @@ export function createPatchFunction(backend) {
   }
 
   return function patch(oldVnode, vnode, hydrating, removeOnly) {
-    console.log(oldVnode, vnode)
+    // console.log(oldVnode, vnode)
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
       return

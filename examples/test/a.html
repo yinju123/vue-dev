@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<style>
+  .a {
+    background-color: red;
+    padding: 20px;
+  }
+
+  .b {
+    background-color: blue;
+    text-decoration: underline;
+  }
+</style>
+
+<body>
+  <div class="a">
+    <div class="b">aaaaaaaaa</div>
+  </div>
+</body>
+
+<script>
+  let p1 = Promise.resolve('p1')
+  let p2 = Promise.resolve('p2')
+  let p3 = Promise.reject('p3')
+
+  Promise.all([p1, p2, p3]).then(
+    (resp) => console.log(resp),
+    (rej) => console.log(rej)
+  )
+
+</script>
+
+</html>
