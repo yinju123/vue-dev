@@ -431,6 +431,7 @@ export function parse(
         }
         let res;
         let child: ?ASTNode;
+        // parseText 解析表达式和过滤器
         if (!inVPre && text !== " " && (res = parseText(text, delimiters))) {
           child = {
             type: 2,

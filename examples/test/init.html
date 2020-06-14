@@ -17,8 +17,9 @@
     <h1>初始化流程</h1>
     <!-- 这是注释 -->
     <p id="p1">{{userInfo.name}}</p>
-    <p>{{userInfo.age}}</p>
-    <div v-if="a">{{b}}</div>
+
+    <p>{{userInfo.age}}/</p>
+    <div v-if="">{{a | double | add(4)}}</div>
 
   </div>
   <script>
@@ -35,13 +36,14 @@
           name: "seclusion",
           age: 26
         },
+        reg: /a/,
         arr: [
           { num: 1 },
           { num: 2 }
         ],
-        a: 1,
+        a: 4,
         b: 2,
-        message: "hello"
+        message: "ahello"
       },
       components: {
         sku: {
@@ -52,13 +54,18 @@
         getA() {
           console.log("getA")
         }
+      },
+      filters: {
+        double(val) {
+          return val * 2
+        },
+        add(val, num) {
+          return val + num
+        }
       }
     });
 
-      // setTimeout(() => {
-      //   app.userInfo.name = "yinju"
-      //   app.userInfo.age = 27
-      // }, 1000)
+
   </script>
 </body>
 

@@ -131,14 +131,6 @@ export function parseHTML(html, options) {
       let text, rest, next;
       if (textEnd >= 0) {
         rest = html.slice(textEnd);
-        // console.log("rest", rest);
-        // debugger;
-        // console.log(rest);
-        // console.log(111, endTag.test(rest));
-        // console.log(222, startTagOpen.test(rest));
-        // console.log(333, comment.test(rest));
-        // console.log(444, conditionalComment.test(rest));
-        console.log("-----------");
         // 不包含起始标签、结束标签、普通注释，IE注释----纯文本内容
         while (
           !endTag.test(rest) &&
