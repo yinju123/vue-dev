@@ -1,41 +1,43 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Vue源码剖析</title>
+    <script src="../../dist/vue.js"></script>
+  </head>
 
-<head>
-  <title>Vue源码剖析</title>
-  <script src="../../dist/vue.js"></script>
-</head>
-
-<body>
-  <div id="demo" :m="{{userInfo.age}}" @click="getA">
-    <h1>初始化流程</h1>
-    <!-- 这是注释 -->
-    <p id="p1">{{userInfo.name}}</p>
-    <p>{{userInfo.age}}</p>
-  </div>
-  <script>
-    // 一个组件一个watcher，data有几个对象，就有几个observers，dep的数量是
-    // 组件*2+observers+data的属性
-    let reg = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
-    const app = new Vue({
-      el: "#demo",
-      // template: '<div>template</div>',
-      // template: '#app',
-      // render(h){return h('div','render')},
-      comments: true,
-      data: { userInfo: { name: "seclusion", age: 26 } },
-      methods: {
-        getA() {
-          console.log("getA")
-        }
-      }
-    });
+  <body>
+    <div id="demo">
+      <h1>初始化流程</h1>
+      <!-- 这是注释 -->
+      是的发生水电费
+      <p v-for="(item, index, a) in list[0]" id="p1">{{userInfo.name}}</p>
+      <p>{{userInfo.age}}</p>
+    </div>
+    <script>
+      // 一个组件一个watcher，data有几个对象，就有几个observers，dep的数量是
+      // 组件*2+observers+data的属性
+      let reg = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
+      const app = new Vue({
+        el: "#demo",
+        // template: '<div>template</div>',
+        // template: '#app',
+        // render(h){return h('div','render')},
+        comments: true,
+        data: {
+          userInfo: { name: "seclusion", age: 26 },
+          list: [1, 2],
+        },
+        methods: {
+          getA() {
+            console.log("getA");
+          },
+        },
+      });
 
       // setTimeout(() => {
       //   app.userInfo.name = "yinju"
       //   app.userInfo.age = 27
       // }, 1000)
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>
