@@ -363,7 +363,7 @@ export function parse(
         }
       }
 
-      // 应该是单元素标签
+      // 如果不是单元素标签
       if (!unary) {
         currentParent = element;
         stack.push(element);
@@ -432,6 +432,18 @@ export function parse(
         let res;
         let child: ?ASTNode;
         // parseText 解析表达式和过滤器
+        /* 
+          {
+            expression:_s(userInfo.age)+"/"+_s(b),
+            tokens:[
+              {@binding: "userInfo.age"}
+              "/"
+              {@binding: "b"}
+            ]
+          }
+        
+        */
+        //  使用了data里面的数据
         if (!inVPre && text !== " " && (res = parseText(text, delimiters))) {
           child = {
             type: 2,

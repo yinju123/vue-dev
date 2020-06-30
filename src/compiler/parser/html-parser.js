@@ -64,6 +64,7 @@ export function parseHTML(html, options) {
   const canBeLeftOpenTag = options.canBeLeftOpenTag || no;
   let index = 0;
   let last, lastTag;
+  console.log('html', html)
   while (html) {
     last = html;
     // Make sure we're not in a plaintext content element like script/style
@@ -108,6 +109,7 @@ export function parseHTML(html, options) {
 
         // End tag:
         const endTagMatch = html.match(endTag);
+        // debugger
         if (endTagMatch) {
           const curIndex = index;
           advance(endTagMatch[0].length);
@@ -307,7 +309,6 @@ export function parseHTML(html, options) {
         attrs[i].end = args.end;
       }
     }
-
     if (!unary) {
       stack.push({
         tag: tagName,
@@ -324,6 +325,7 @@ export function parseHTML(html, options) {
     }
   }
 
+  // 结束标签
   function parseEndTag(tagName, start, end) {
     let pos, lowerCasedTagName;
     if (start == null) start = index;
@@ -343,7 +345,9 @@ export function parseHTML(html, options) {
     }
 
     if (pos >= 0) {
+
       // Close all the open elements, up the stack
+      // 结束一个标签，这个标签就会从stack移除，所以有结束标签的时候，这个标签的开始标签不是stack最后一个，就说明出错了
       for (let i = stack.length - 1; i >= pos; i--) {
         if (
           process.env.NODE_ENV !== "production" &&

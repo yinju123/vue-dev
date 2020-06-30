@@ -17,15 +17,19 @@ export function parseFilters(exp: string): string {
     prev = c
     c = exp.charCodeAt(i)
     if (inSingle) {
+      // 0x5C 正则 '
       if (c === 0x27 && prev !== 0x5C) inSingle = false
     } else if (inDouble) {
+      // ""
       if (c === 0x22 && prev !== 0x5C) inDouble = false
     } else if (inTemplateString) {
+      // `
       if (c === 0x60 && prev !== 0x5C) inTemplateString = false
     } else if (inRegex) {
+      // /
       if (c === 0x2f && prev !== 0x5C) inRegex = false
     } else if (
-      // 或运算符
+      // 或运算符 获取 过滤器
       c === 0x7C && // pipe
       exp.charCodeAt(i + 1) !== 0x7C &&
       exp.charCodeAt(i - 1) !== 0x7C &&
