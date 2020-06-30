@@ -86,15 +86,15 @@ export function parse(
   template: string,
   options: CompilerOptions
 ): ASTElement | void {
-  warn = options.warn || baseWarn
+  warn = options.warn || baseWarn;
   //  是否是pre标签
-  platformIsPreTag = options.isPreTag || no
+  platformIsPreTag = options.isPreTag || no;
   // 判断标签的必须属性是否存在
-  platformMustUseProp = options.mustUseProp || no
+  platformMustUseProp = options.mustUseProp || no;
   // tag 是否是svg标签或者等于 math
-  platformGetTagNamespace = options.getTagNamespace || no
+  platformGetTagNamespace = options.getTagNamespace || no;
   // 是否是html标签或者svg标签
-  const isReservedTag = options.isReservedTag || no
+  const isReservedTag = options.isReservedTag || no;
 
   maybeComponent = (el: ASTElement) => !!el.component || !isReservedTag(el.tag)
   transforms = pluckModuleFunction(options.modules, 'transformNode')
@@ -105,13 +105,13 @@ export function parse(
   delimiters = options.delimiters
   const stack = []
   // false
-  const preserveWhitespace = options.preserveWhitespace !== false
-  const whitespaceOption = options.whitespace
-  let root
-  let currentParent
-  let inVPre = false
-  let inPre = false
-  let warned = false
+  const preserveWhitespace = options.preserveWhitespace !== false;
+  const whitespaceOption = options.whitespace;
+  let root;
+  let currentParent;
+  let inVPre = false;
+  let inPre = false;
+  let warned = false;
 
   function warnOnce(msg, range) {
     if (!warned) {
@@ -184,6 +184,7 @@ export function parse(
 
   function trimEndingWhitespace(el) {
     // remove trailing whitespace node
+    // debugger;
     if (!inPre) {
       let lastNode;
       while (
@@ -244,7 +245,7 @@ export function parse(
       // inherit parent ns if there is one
       const ns =
         (currentParent && currentParent.ns) || platformGetTagNamespace(tag);
-      // debugger
+
       // handle IE svg bug
       /* istanbul ignore if */
       if (isIE && ns === "svg") {
@@ -252,6 +253,19 @@ export function parse(
       }
 
       // 获取初始属性
+      /* 
+        {
+          type: 1,
+          tag,
+          attrsList: attrs,
+          // 将attr结构由[{name,attr}] 换成[{name:attr}]
+          attrsMap: makeAttrsMap(attrs),
+          rawAttrsMap: {},
+          parent,
+          children: [],
+        }
+      
+      */
       let element: ASTElement = createASTElement(tag, attrs, currentParent);
       // console.log("element", element)
       if (ns) {
@@ -322,6 +336,7 @@ export function parse(
 
       // 标签是否存在v-pre 属性
       if (!inVPre) {
+        // 判断有没有v-pre
         processPre(element);
         if (element.pre) {
           inVPre = true;
@@ -332,6 +347,7 @@ export function parse(
         inPre = true;
       }
       if (inVPre) {
+        // element 中添加attrs属性，格式与attrsList 出不多，只是把 val装换成字符串了
         processRawAttrs(element);
       } else if (!element.processed) {
         // structural directives
@@ -361,11 +377,14 @@ export function parse(
         root = element;
         if (process.env.NODE_ENV !== "production") {
           // 确认根元素是否是template和slot元素或者存在v-for指令
+          // 1 判断root是否是slot或者template，是则报错
+          // 2 判断是否有v-for属性，是则报错
           checkRootConstraints(root);
         }
       }
 
       // 应该是单元素标签，设置当前的父级标签
+      // 如果不是单元素标签
       if (!unary) {
         currentParent = element;
         stack.push(element);
@@ -438,6 +457,19 @@ export function parse(
         }
         let res;
         let child: ?ASTNode;
+        // parseText 解析表达式和过滤器
+        /* 
+          {
+            expression:_s(userInfo.age)+"/"+_s(b),
+            tokens:[
+              {@binding: "userInfo.age"}
+              "/"
+              {@binding: "b"}
+            ]
+          }
+        
+        */
+        //  使用了data里面的数据
         if (!inVPre && text !== " " && (res = parseText(text, delimiters))) {
           child = {
             type: 2,
@@ -511,6 +543,7 @@ function processRawAttrs(el) {
         attrs[i].end = list[i].end;
       }
     }
+    // pre标签 切没属性
   } else if (!el.pre) {
     // non root node in pre blocks with no attributes
     el.plain = true;
@@ -589,6 +622,7 @@ export function processFor(el: ASTElement) {
     */
     const res = parseFor(exp);
     if (res) {
+      // 将res 合并到 el中
       extend(el, res);
     } else if (process.env.NODE_ENV !== "production") {
       warn(`Invalid v-for expression: ${exp}`, el.rawAttrsMap["v-for"]);

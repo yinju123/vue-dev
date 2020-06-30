@@ -9,104 +9,112 @@
  * http://erik.eae.net/simplehtmlparser/simplehtmlparser.js
  */
 
-import { makeMap, no } from 'shared/util'
-import { isNonPhrasingTag } from 'web/compiler/util'
-import { unicodeRegExp } from 'core/util/lang'
+import { makeMap, no } from "shared/util";
+import { isNonPhrasingTag } from "web/compiler/util";
+import { unicodeRegExp } from "core/util/lang";
 
 // Regular Expressions for parsing tags and attributes
-const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
-const dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
-const ncname = `[a-zA-Z_][\\-\\.0-9_a-zA-Z${unicodeRegExp.source}]*`
-const qnameCapture = `((?:${ncname}\\:)?${ncname})`
-const startTagOpen = new RegExp(`^<${qnameCapture}`)
-const startTagClose = /^\s*(\/?)>/
-const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`)
-const doctype = /^<!DOCTYPE [^>]+>/i
+const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
+const dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
+const ncname = `[a-zA-Z_][\\-\\.0-9_a-zA-Z${unicodeRegExp.source}]*`;
+const qnameCapture = `((?:${ncname}\\:)?${ncname})`;
+const startTagOpen = new RegExp(`^<${qnameCapture}`);
+const startTagClose = /^\s*(\/?)>/;
+const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`);
+const doctype = /^<!DOCTYPE [^>]+>/i;
 // #7298: escape - to avoid being passed as HTML comment when inlined in page
-const comment = /^<!\--/
-const conditionalComment = /^<!\[/
+const comment = /^<!\--/;
+const conditionalComment = /^<!\[/;
 
 // Special Elements (can contain anything)
-export const isPlainTextElement = makeMap('script,style,textarea', true)
-const reCache = {}
+export const isPlainTextElement = makeMap("script,style,textarea", true);
+const reCache = {};
 
 const decodingMap = {
-  '&lt;': '<',
-  '&gt;': '>',
-  '&quot;': '"',
-  '&amp;': '&',
-  '&#10;': '\n',
-  '&#9;': '\t',
-  '&#39;': "'"
-}
-const encodedAttr = /&(?:lt|gt|quot|amp|#39);/g
-const encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#39|#10|#9);/g
+  "&lt;": "<",
+  "&gt;": ">",
+  "&quot;": '"',
+  "&amp;": "&",
+  "&#10;": "\n",
+  "&#9;": "\t",
+  "&#39;": "'",
+};
+const encodedAttr = /&(?:lt|gt|quot|amp|#39);/g;
+const encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#39|#10|#9);/g;
 
 // #5992
-const isIgnoreNewlineTag = makeMap('pre,textarea', true)
-const shouldIgnoreFirstNewline = (tag, html) => tag && isIgnoreNewlineTag(tag) && html[0] === '\n'
+const isIgnoreNewlineTag = makeMap("pre,textarea", true);
+const shouldIgnoreFirstNewline = (tag, html) =>
+  tag && isIgnoreNewlineTag(tag) && html[0] === "\n";
 
 function decodeAttr(value, shouldDecodeNewlines) {
-  const re = shouldDecodeNewlines ? encodedAttrWithNewLines : encodedAttr
-  return value.replace(re, match => decodingMap[match])
+  const re = shouldDecodeNewlines ? encodedAttrWithNewLines : encodedAttr;
+  return value.replace(re, (match) => decodingMap[match]);
 }
 
 export function parseHTML(html, options) {
-  const stack = []
+  const stack = [];
   // true baseOptions 中设置的expectHTML
-  const expectHTML = options.expectHTML
+  const expectHTML = options.expectHTML;
   // 是否是单标签，比如link meta
   const isUnaryTag = options.isUnaryTag || no
   // debugger
   // 是否是这些标签
   // 'colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,source'
-  const canBeLeftOpenTag = options.canBeLeftOpenTag || no
-  let index = 0
-  let last, lastTag
+  const canBeLeftOpenTag = options.canBeLeftOpenTag || no;
+  let index = 0;
+  let last, lastTag;
+  console.log('html', html)
   while (html) {
-    last = html
+    last = html;
     // Make sure we're not in a plaintext content element like script/style
     // 确认不是script/style/textarea 标签
     if (!lastTag || !isPlainTextElement(lastTag)) {
-      let textEnd = html.indexOf('<')
+      let textEnd = html.indexOf("<");
+      // console.log("textEnd", textEnd);
       if (textEnd === 0) {
         // Comment:
         // 判断是否存在注释,并且是以注释开头的
         if (comment.test(html)) {
-          const commentEnd = html.indexOf('-->')
+          const commentEnd = html.indexOf("-->");
           if (commentEnd >= 0) {
             if (options.shouldKeepComment) {
-              options.comment(html.substring(4, commentEnd), index, index + commentEnd + 3)
+              options.comment(
+                html.substring(4, commentEnd),
+                index,
+                index + commentEnd + 3
+              );
             }
-            advance(commentEnd + 3)
-            continue
+            advance(commentEnd + 3);
+            continue;
           }
         }
         // http://en.wikipedia.org/wiki/Conditional_comment#Downlevel-revealed_conditional_comment
         // 这里应该是IE的版本声明
         if (conditionalComment.test(html)) {
-          const conditionalEnd = html.indexOf(']>')
+          const conditionalEnd = html.indexOf("]>");
 
           if (conditionalEnd >= 0) {
-            advance(conditionalEnd + 2)
-            continue
+            advance(conditionalEnd + 2);
+            continue;
           }
         }
 
         // Doctype:
-        const doctypeMatch = html.match(doctype)
+        const doctypeMatch = html.match(doctype);
         if (doctypeMatch) {
-          advance(doctypeMatch[0].length)
-          continue
+          advance(doctypeMatch[0].length);
+          continue;
         }
 
         // End tag:
-        const endTagMatch = html.match(endTag)
+        const endTagMatch = html.match(endTag);
+        // debugger
         if (endTagMatch) {
-          const curIndex = index
-          advance(endTagMatch[0].length)
-          parseEndTag(endTagMatch[1], curIndex, index)
-          continue
+          const curIndex = index;
+          advance(endTagMatch[0].length);
+          parseEndTag(endTagMatch[1], curIndex, index);
+          continue;
         }
 
         // Start tag:
@@ -136,17 +144,16 @@ export function parseHTML(html, options) {
           handleStartTag(startTagMatch)
           // 有可能换行了，开始标签和他的子元素不在一行
           if (shouldIgnoreFirstNewline(startTagMatch.tagName, html)) {
-            advance(1)
+            advance(1);
           }
-          continue
+          continue;
         }
       }
 
-      let text, rest, next
-      // 标签换行了或者文本，计算这部分内容
+      let text, rest, next;
       if (textEnd >= 0) {
-        rest = html.slice(textEnd)
-        // 这部分不知道是干嘛的，怎么会出现没有结束标签
+        rest = html.slice(textEnd);
+        // 不包含起始标签、结束标签、普通注释，IE注释----纯文本内容
         while (
           !endTag.test(rest) &&
           !startTagOpen.test(rest) &&
@@ -154,105 +161,141 @@ export function parseHTML(html, options) {
           !conditionalComment.test(rest)
         ) {
           // < in plain text, be forgiving and treat it as text
-          next = rest.indexOf('<', 1)
-          if (next < 0) break
-          textEnd += next
-          rest = html.slice(textEnd)
+          next = rest.indexOf("<", 1);
+          debugger;
+          if (next < 0) break;
+          textEnd += next;
+          rest = html.slice(textEnd);
         }
-        text = html.substring(0, textEnd)
+        text = html.substring(0, textEnd);
       }
       if (textEnd < 0) {
-        text = html
+        text = html;
       }
       if (text) {
-        advance(text.length)
+        advance(text.length);
       }
       // 本文内容处理
       if (options.chars && text) {
-        options.chars(text, index - text.length, index)
+        options.chars(text, index - text.length, index);
       }
     } else {
-      let endTagLength = 0
-      const stackedTag = lastTag.toLowerCase()
-      const reStackedTag = reCache[stackedTag] || (reCache[stackedTag] = new RegExp('([\\s\\S]*?)(</' + stackedTag + '[^>]*>)', 'i'))
+      let endTagLength = 0;
+      const stackedTag = lastTag.toLowerCase();
+      const reStackedTag =
+        reCache[stackedTag] ||
+        (reCache[stackedTag] = new RegExp(
+          "([\\s\\S]*?)(</" + stackedTag + "[^>]*>)",
+          "i"
+        ));
       const rest = html.replace(reStackedTag, function (all, text, endTag) {
-        endTagLength = endTag.length
-        if (!isPlainTextElement(stackedTag) && stackedTag !== 'noscript') {
+        endTagLength = endTag.length;
+        if (!isPlainTextElement(stackedTag) && stackedTag !== "noscript") {
           text = text
-            .replace(/<!\--([\s\S]*?)-->/g, '$1') // #7298
-            .replace(/<!\[CDATA\[([\s\S]*?)]]>/g, '$1')
+            .replace(/<!\--([\s\S]*?)-->/g, "$1") // #7298
+            .replace(/<!\[CDATA\[([\s\S]*?)]]>/g, "$1");
         }
         if (shouldIgnoreFirstNewline(stackedTag, text)) {
-          text = text.slice(1)
+          text = text.slice(1);
         }
         if (options.chars) {
-          options.chars(text)
+          options.chars(text);
         }
-        return ''
-      })
-      index += html.length - rest.length
-      html = rest
-      parseEndTag(stackedTag, index - endTagLength, index)
+        return "";
+      });
+      index += html.length - rest.length;
+      html = rest;
+      parseEndTag(stackedTag, index - endTagLength, index);
     }
 
     if (html === last) {
-      options.chars && options.chars(html)
-      if (process.env.NODE_ENV !== 'production' && !stack.length && options.warn) {
-        options.warn(`Mal-formatted tag at end of template: "${html}"`, { start: index + html.length })
+      options.chars && options.chars(html);
+      if (
+        process.env.NODE_ENV !== "production" &&
+        !stack.length &&
+        options.warn
+      ) {
+        options.warn(`Mal-formatted tag at end of template: "${html}"`, {
+          start: index + html.length,
+        });
       }
-      break
+      break;
     }
   }
 
   // Clean up any remaining tags
-  parseEndTag()
+  parseEndTag();
 
   // 计算新的位置，并取出没有标记的标签
   function advance(n) {
-    index += n
-    html = html.substring(n)
+    index += n;
+    html = html.substring(n);
   }
 
   // 设置match 获取标签的起始位置，结束位置，所有属性
+  /* 
+  match = {
+    tagName: start[1],
+    attrs: [],// match的结果
+    start: index,
+    end:"",
+    unarySlash:"" //可能存在，值为"/"
+  }
+  */
   function parseStartTag() {
     // start:<div
-    const start = html.match(startTagOpen)
+    const start = html.match(startTagOpen);
     if (start) {
       const match = {
         tagName: start[1],
         attrs: [],
-        start: index
-      }
-      advance(start[0].length)
-      let end, attr
+        start: index,
+      };
+      advance(start[0].length);
+      let end, attr;
       // 把属性切割出来，标出属性的起始位置，结束位置
-      while (!(end = html.match(startTagClose)) && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
-        attr.start = index
-        advance(attr[0].length)
-        attr.end = index
-        match.attrs.push(attr)
+      while (
+        !(end = html.match(startTagClose)) &&
+        (attr = html.match(dynamicArgAttribute) || html.match(attribute))
+      ) {
+        attr.start = index;
+        advance(attr[0].length);
+        attr.end = index;
+        match.attrs.push(attr);
       }
       if (end) {
-        match.unarySlash = end[1]
-        advance(end[0].length)
-        match.end = index
+        match.unarySlash = end[1];
+        advance(end[0].length);
+        match.end = index;
         // debugger
-        return match
+        return match;
       }
     }
   }
 
+  // 这部分就是将attrs的结构name提出来了，有怕[attr] 改成 [{name,attr}]
+  /* 
+  {
+    tag: tagName,
+    lowerCasedTag: tagName.toLowerCase(),
+    attrs: attrs,
+    start: match.start,
+    end: match.end,
+  }
+  
+  
+  */
   function handleStartTag(match) {
-    const tagName = match.tagName
-    const unarySlash = match.unarySlash
+    const tagName = match.tagName;
+    const unarySlash = match.unarySlash;
 
     // 这部分等待，暂时不知道干什么的
     if (expectHTML) {
-      if (lastTag === 'p' && isNonPhrasingTag(tagName)) {
-        parseEndTag(lastTag)
+      if (lastTag === "p" && isNonPhrasingTag(tagName)) {
+        parseEndTag(lastTag);
       }
       if (canBeLeftOpenTag(tagName) && lastTag === tagName) {
-        parseEndTag(tagName)
+        parseEndTag(tagName);
       }
     }
 
@@ -261,11 +304,11 @@ export function parseHTML(html, options) {
 
     const unary = isUnaryTag(tagName) || !!unarySlash
 
-    const l = match.attrs.length
-    const attrs = new Array(l)
+    const l = match.attrs.length;
+    const attrs = new Array(l);
     for (let i = 0; i < l; i++) {
       // 0 是匹配到的字符串 1是属性 2 是= 345 可能是值
-      const args = match.attrs[i]
+      const args = match.attrs[i];
       // debugger
       // 获取标签上属性，绑定的值, 或者是绑定的方法
       const value = args[3] || args[4] || args[5] || ''
@@ -276,74 +319,83 @@ export function parseHTML(html, options) {
       attrs[i] = {
         name: args[1],
         // 有可能是转义字符，将它换成真正的字符
-        value: decodeAttr(value, shouldDecodeNewlines)
-      }
+        value: decodeAttr(value, shouldDecodeNewlines),
+      };
       // debugger
-      // 这两个的值都是process.env.NODE_ENV !== 'production' 
-      if (process.env.NODE_ENV !== 'production' && options.outputSourceRange) {
-        attrs[i].start = args.start + args[0].match(/^\s*/).length
-        attrs[i].end = args.end
+      // 这两个的值都是process.env.NODE_ENV !== 'production'
+      if (process.env.NODE_ENV !== "production" && options.outputSourceRange) {
+        attrs[i].start = args.start + args[0].match(/^\s*/).length;
+        attrs[i].end = args.end;
       }
     }
-
     if (!unary) {
-      stack.push({ tag: tagName, lowerCasedTag: tagName.toLowerCase(), attrs: attrs, start: match.start, end: match.end })
-      lastTag = tagName
+      stack.push({
+        tag: tagName,
+        lowerCasedTag: tagName.toLowerCase(),
+        attrs: attrs,
+        start: match.start,
+        end: match.end,
+      });
+      lastTag = tagName;
     }
 
     if (options.start) {
-      options.start(tagName, attrs, unary, match.start, match.end)
+      options.start(tagName, attrs, unary, match.start, match.end);
     }
   }
 
+  // 结束标签
   function parseEndTag(tagName, start, end) {
-    let pos, lowerCasedTagName
-    if (start == null) start = index
-    if (end == null) end = index
+    let pos, lowerCasedTagName;
+    if (start == null) start = index;
+    if (end == null) end = index;
 
     // Find the closest opened tag of the same type
     if (tagName) {
-      lowerCasedTagName = tagName.toLowerCase()
+      lowerCasedTagName = tagName.toLowerCase();
       for (pos = stack.length - 1; pos >= 0; pos--) {
         if (stack[pos].lowerCasedTag === lowerCasedTagName) {
-          break
+          break;
         }
       }
     } else {
       // If no tag name is provided, clean shop
-      pos = 0
+      pos = 0;
     }
 
     if (pos >= 0) {
+
       // Close all the open elements, up the stack
+      // 结束一个标签，这个标签就会从stack移除，所以有结束标签的时候，这个标签的开始标签不是stack最后一个，就说明出错了
       for (let i = stack.length - 1; i >= pos; i--) {
-        if (process.env.NODE_ENV !== 'production' &&
+        if (
+          process.env.NODE_ENV !== "production" &&
           (i > pos || !tagName) &&
           options.warn
         ) {
-          options.warn(
-            `tag <${stack[i].tag}> has no matching end tag.`,
-            { start: stack[i].start, end: stack[i].end }
-          )
+          options.warn(`tag <${stack[i].tag}> has no matching end tag.`, {
+            start: stack[i].start,
+            end: stack[i].end,
+          });
         }
         if (options.end) {
-          options.end(stack[i].tag, start, end)
+          options.end(stack[i].tag, start, end);
         }
       }
 
       // Remove the open elements from the stack
-      stack.length = pos
-      lastTag = pos && stack[pos - 1].tag
-    } else if (lowerCasedTagName === 'br') {
+      stack.length = pos;
+      lastTag = pos && stack[pos - 1].tag;
+    } else if (lowerCasedTagName === "br") {
       if (options.start) {
-        options.start(tagName, [], true, start, end)
+        options.start(tagName, [], true, start, end);
       }
-    } else if (lowerCasedTagName === 'p') {
+    } else if (lowerCasedTagName === "p") {
       if (options.start) {
-        options.start(tagName, [], false, start, end)
+        options.start(tagName, [], false, start, end);
       }
       if (options.end) {
-        options.end(tagName, start, end)
+        options.end(tagName, start, end);
       }
     }
   }

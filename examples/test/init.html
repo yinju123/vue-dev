@@ -6,8 +6,21 @@
   <script src="../../dist/vue.js"></script>
 </head>
 
+<head>
+  <title>Vue源码剖析</title>
+  <script src="../../dist/vue.js"></script>
+</head>
+
 <body>
   <div id="demo" @click="getA">
+    <!-- <sku /> -->
+    <!-- <h1>初始化流程</h1>
+    <p id="p1">{{userInfo.name}}</p> -->
+
+    <!-- <p>{{userInfo.age}}/{{b}}</p> -->
+    <div class="p">
+      <div class="c">{{a}}</div>
+    </div>
 
     <!-- <sku /> -->
     <h1>初始< 化流程</h1>
@@ -30,13 +43,14 @@
           name: "seclusion",
           age: 26
         },
+        reg: /a/,
         arr: [
           { num: 1 },
           { num: 2 }
         ],
-        a: 1,
+        a: 4,
         b: 2,
-        message: "hello"
+        message: "ahello"
       },
       components: {
         sku: {
@@ -47,13 +61,18 @@
         getA() {
           console.log("getA")
         }
+      },
+      filters: {
+        double(val) {
+          return val * 2
+        },
+        add(val, num) {
+          return val + num
+        }
       }
     });
 
-      // setTimeout(() => {
-      //   app.userInfo.name = "yinju"
-      //   app.userInfo.age = 27
-      // }, 1000)
+
   </script>
 </body>
 
