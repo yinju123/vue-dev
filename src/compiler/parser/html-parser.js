@@ -110,10 +110,31 @@ export function parseHTML(html, options) {
         }
 
         // Start tag:
+        // 开始标签的属性全部切出来，属性包括指令
+        /* 
+          attrs 是正则匹配的结果
+          {
+            tagName: start[1],
+            attrs: [],
+            start: index,
+            end:""
+          }
+        */
         const startTagMatch = parseStartTag()
         // debugger
         if (startTagMatch) {
+          /* 
+            1 整理属性值 attrs
+            {
+              name: "", // 属性名
+              value:"", // 属性值
+              start:"",
+              end:""
+            }
+            2 执行 options.start(tagName, attrs, unary, match.start, match.end)
+          */
           handleStartTag(startTagMatch)
+          // 有可能换行了，开始标签和他的子元素不在一行
           if (shouldIgnoreFirstNewline(startTagMatch.tagName, html)) {
             advance(1)
           }
@@ -122,8 +143,10 @@ export function parseHTML(html, options) {
       }
 
       let text, rest, next
+      // 标签换行了或者文本，计算这部分内容
       if (textEnd >= 0) {
         rest = html.slice(textEnd)
+        // 这部分不知道是干嘛的，怎么会出现没有结束标签
         while (
           !endTag.test(rest) &&
           !startTagOpen.test(rest) &&
@@ -138,15 +161,13 @@ export function parseHTML(html, options) {
         }
         text = html.substring(0, textEnd)
       }
-
       if (textEnd < 0) {
         text = html
       }
-
       if (text) {
         advance(text.length)
       }
-
+      // 本文内容处理
       if (options.chars && text) {
         options.chars(text, index - text.length, index)
       }
@@ -236,7 +257,8 @@ export function parseHTML(html, options) {
     }
 
     // 不知道为什么要用或，是用为自定义组件，可以用单标签写法吗
-    // 判断是都是单标签， unary："/"" 
+    // 判断是都是单标签， unary："/""  false
+
     const unary = isUnaryTag(tagName) || !!unarySlash
 
     const l = match.attrs.length

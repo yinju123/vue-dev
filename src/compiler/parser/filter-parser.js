@@ -2,7 +2,7 @@
 
 const validDivisionCharRE = /[\w).+\-_$\]]/
 
-// exp
+// exp 对于标签中的值进行读取，如class style 绑定绑定的参数
 export function parseFilters(exp: string): string {
   let inSingle = false
   let inDouble = false

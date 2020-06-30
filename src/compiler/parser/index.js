@@ -42,6 +42,8 @@ const whitespaceRE = /\s+/g;
 
 const invalidAttributeRE = /[\s"'<>\/=]/;
 
+console.log("he.decode", he.decode)
+// 创建一个标签，标签的innerHTML等于传入的string，返回标签的textContent。这样做的意义是什么，是因为会转移吗
 const decodeHTMLCached = cached(he.decode);
 
 export const emptySlotScopeToken = `_empty_`;
@@ -99,8 +101,8 @@ export function parse(
   preTransforms = pluckModuleFunction(options.modules, 'preTransformNode')
   postTransforms = pluckModuleFunction(options.modules, 'postTransformNode')
 
+  // undefined
   delimiters = options.delimiters
-  // debugger
   const stack = []
   // false
   const preserveWhitespace = options.preserveWhitespace !== false
@@ -220,7 +222,23 @@ export function parse(
     shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref,
     shouldKeepComment: options.comments,
     outputSourceRange: options.outputSourceRange,
-    // 获取标签上
+    /* 
+      1 获取标签上的属性和值
+      {
+        type: 1,
+        tag,
+        // 数组， 里面是对象， name value
+        attrsList: attrs,
+        // 属性名和属性值
+        attrsMap: makeAttrsMap(attrs),
+        rawAttrsMap: {},
+        parent,
+        children: [],
+      }
+      2 input 标签特殊处理
+      3 for if on 指令的处理，只是将数据添加到element上
+      4 设置currentParent，并把当前对象加入到stack
+    */
     start(tag, attrs, unary, start, end) {
       // check namespace.
       // inherit parent ns if there is one
@@ -338,14 +356,16 @@ export function parse(
         processOnce(element);
       }
 
+      // 根节点
       if (!root) {
         root = element;
         if (process.env.NODE_ENV !== "production") {
+          // 确认根元素是否是template和slot元素或者存在v-for指令
           checkRootConstraints(root);
         }
       }
 
-      // 应该是单元素标签
+      // 应该是单元素标签，设置当前的父级标签
       if (!unary) {
         currentParent = element;
         stack.push(element);
@@ -364,7 +384,9 @@ export function parse(
       closeElement(element);
     },
 
+    // 这里是处理文本
     chars(text: string, start: number, end: number) {
+      // 不存在父级标签报错
       if (!currentParent) {
         if (process.env.NODE_ENV !== "production") {
           if (text === template) {
@@ -390,11 +412,14 @@ export function parse(
         return;
       }
       const children = currentParent.children;
+      // text 有实质内容
       if (inPre || text.trim()) {
         text = isTextTag(currentParent) ? text : decodeHTMLCached(text);
+        // 标签时空的
       } else if (!children.length) {
         // remove the whitespace-only node right after an opening tag
         text = "";
+        // whitespaceOption undefined
       } else if (whitespaceOption) {
         if (whitespaceOption === "condense") {
           // in condense mode, remove the whitespace node if it contains
