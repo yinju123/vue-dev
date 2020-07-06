@@ -26,8 +26,9 @@ export const createCompiler = createCompilerCreator(function baseCompile(
 
   */
 
-  console.log("options1111111", options)
+
   const ast = parse(template.trim(), options)
+  // debugger
   if (options.optimize !== false) {
     optimize(ast, options)
   }

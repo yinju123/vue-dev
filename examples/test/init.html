@@ -52,6 +52,11 @@
         b: 2,
         message: "ahello"
       },
+      mounted() {
+        setTimeout(() => {
+          this.a = 33
+        }, 1000)
+      },
       components: {
         sku: {
           template: `<div>这是sku</div>`
@@ -71,6 +76,7 @@
         }
       }
     });
+
 
 
   </script>

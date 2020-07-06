@@ -38,7 +38,7 @@ export function parseText(
   // 存在{{}}时执行
   while ((match = tagRE.exec(text))) {
     index = match.index
-    console.log('match', match, lastIndex, index)
+    // console.log('match', match, lastIndex, index)
     // push text token
     // 两个表达式之间有内容
     // <div v-if="">{{a/b}}sdf d{{a}}</div>

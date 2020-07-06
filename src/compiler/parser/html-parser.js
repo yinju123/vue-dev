@@ -64,7 +64,6 @@ export function parseHTML(html, options) {
   const canBeLeftOpenTag = options.canBeLeftOpenTag || no;
   let index = 0;
   let last, lastTag;
-  console.log('html', html)
   while (html) {
     last = html;
     // Make sure we're not in a plaintext content element like script/style
@@ -109,7 +108,6 @@ export function parseHTML(html, options) {
 
         // End tag:
         const endTagMatch = html.match(endTag);
-        // debugger
         if (endTagMatch) {
           const curIndex = index;
           advance(endTagMatch[0].length);

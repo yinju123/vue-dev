@@ -54,7 +54,6 @@ export default class Watcher {
     if (isRenderWatcher) {
       vm._watcher = this;
     }
-    // 不是挂在了吗为什么，还要push
     vm._watchers.push(this);
     // options
     if (options) {
@@ -62,6 +61,7 @@ export default class Watcher {
       this.user = !!options.user;
       this.lazy = !!options.lazy;
       this.sync = !!options.sync;
+      // 发送beforeUpdate
       this.before = options.before;
     } else {
       this.deep = this.user = this.lazy = this.sync = false;
@@ -110,6 +110,8 @@ export default class Watcher {
     try {
       // 现在只要知道是渲染就行了
       value = this.getter.call(vm, vm);
+      console.log('value1111111111', value)
+      // debugger
     } catch (e) {
       if (this.user) {
         handleError(e, vm, `getter for watcher "${this.expression}"`);
@@ -212,6 +214,7 @@ export default class Watcher {
         }
       }
     }
+    // debugger
   }
 
   /**

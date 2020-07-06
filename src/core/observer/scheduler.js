@@ -51,6 +51,7 @@ let getNow: () => number = Date.now
 // All IE versions use low-res event timestamps, and have problematic clock
 // implementations (#9632)
 if (inBrowser && !isIE) {
+  // 性能监控
   const performance = window.performance
   if (
     performance &&
@@ -95,6 +96,7 @@ function flushSchedulerQueue() {
       watcher.before()
     }
     id = watcher.id
+    // 执行时队列中的has定义为null
     has[id] = null
     watcher.run()
     // in dev build, check and stop circular updates.
@@ -186,13 +188,11 @@ export function queueWatcher(watcher: Watcher) {
     // 队列执行完之前都不会使用nextTick，但是nextTick里面的队列也是可以添加多个回调的，是为了让我在页面上可以$nextTick吗
     if (!waiting) {
       waiting = true
-
+      // 这是表示马上执行，还是加入队列，等会执行
       if (process.env.NODE_ENV !== 'production' && !config.async) {
         flushSchedulerQueue()
         return
       }
-      debugger
-
       nextTick(flushSchedulerQueue)
     }
   }

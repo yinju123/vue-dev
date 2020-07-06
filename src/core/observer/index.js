@@ -56,6 +56,7 @@ export class Observer {
     } else {
       // 如果是对象
       this.walk(value);
+
     }
   }
 
@@ -159,7 +160,9 @@ export function defineReactive(
     val = obj[key];
   }
   // 属性也是个对象
+  // debugger
   let childOb = !shallow && observe(val);
+
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,

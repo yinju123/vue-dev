@@ -42,7 +42,6 @@ const whitespaceRE = /\s+/g;
 
 const invalidAttributeRE = /[\s"'<>\/=]/;
 
-console.log("he.decode", he.decode)
 // 创建一个标签，标签的innerHTML等于传入的string，返回标签的textContent。这样做的意义是什么，是因为会转移吗
 const decodeHTMLCached = cached(he.decode);
 
