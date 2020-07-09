@@ -92,6 +92,7 @@ export function renderMixin(Vue: Class<Component>) {
 
   Vue.prototype._render = function (): VNode {
     const vm: Component = this;
+    // 在entry-runtime-with-compiler $mount 加上的
     const { render, _parentVnode } = vm.$options;
     // 这应该是父级的虚拟dom
     if (_parentVnode) {
@@ -101,6 +102,7 @@ export function renderMixin(Vue: Class<Component>) {
         vm.$scopedSlots
       );
     }
+
 
     // set parent vnode. this allows render functions to have access
     // to the data on the placeholder node.
@@ -112,13 +114,17 @@ export function renderMixin(Vue: Class<Component>) {
       // separately from one another. Nested component's render fns are called
       // when parent component is patched.
       currentRenderingInstance = vm;
+      // _renderProxy 是proxy 但是handlers 只有 has 这是属性，就是拦截 in 操作
+      console.log('render', render)
       vnode = render.call(vm._renderProxy, vm.$createElement);
+      // debugger
     } catch (e) {
       handleError(e, vm, `render`);
       // return error render result,
       // or previous vnode to prevent render error causing blank component
       /* istanbul ignore else */
       if (process.env.NODE_ENV !== "production" && vm.$options.renderError) {
+
         try {
           vnode = vm.$options.renderError.call(
             vm._renderProxy,
@@ -152,6 +158,7 @@ export function renderMixin(Vue: Class<Component>) {
     }
     // set parent
     vnode.parent = _parentVnode;
+    // debugger
     return vnode;
   };
 }

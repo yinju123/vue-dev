@@ -13,21 +13,10 @@
 
 <body>
   <div id="demo" @click="getA">
-    <!-- <sku /> -->
-    <!-- <h1>初始化流程</h1>
-    <p id="p1">{{userInfo.name}}</p> -->
-
-    <!-- <p>{{userInfo.age}}/{{b}}</p> -->
-    <div class="p">
-      <div class="c">{{a}}</div>
-    </div>
-
-    <!-- <sku /> -->
-    <h1>初始< 化流程</h1>
-        <!-- 这是注释 -->
-        <p id="p1">{{userInfo.name}}</p>
-        <p>{{userInfo.age}} {{message}}</p>
-        <div v-if="a">神的</div>
+    <p id="p1">{{userInfo.name}}</p>
+    <h1>{{userInfo.age}} {{message}}</h1>
+    <div class="a" v-for="(item, index) in a" :key="index">{{index}}</div>
+    <!-- <div v-if="a">神的</div> -->
   </div>
   <script>
     // 一个组件一个watcher，data有几个对象，就有几个observers，dep的数量是
@@ -49,12 +38,11 @@
           { num: 2 }
         ],
         a: 4,
-        b: 2,
         message: "ahello"
       },
       mounted() {
         setTimeout(() => {
-          this.a = 33
+          this.a = 4
         }, 1000)
       },
       components: {

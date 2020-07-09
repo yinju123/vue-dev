@@ -54,11 +54,13 @@ export function initLifecycle(vm: Component) {
   vm._isBeingDestroyed = false;
 }
 
+// 更新页面、强制更新、销毁页面
 export function lifecycleMixin(Vue: Class<Component>) {
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this;
     const prevEl = vm.$el;
     const prevVnode = vm._vnode;
+    // 保存vm到变量activeInstance
     const restoreActiveInstance = setActiveInstance(vm);
     vm._vnode = vnode;
     // Vue.prototype.__patch__ is injected in entry points
@@ -169,7 +171,6 @@ export function mountComponent(
     }
   }
   callHook(vm, "beforeMount");
-
   let updateComponent;
   /* istanbul ignore if */
   if (process.env.NODE_ENV !== "production" && config.performance && mark) {

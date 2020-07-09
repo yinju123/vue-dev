@@ -4127,7 +4127,7 @@ module.exports = function weexFactory(exports, document) {
     vm._isBeingDestroyed = false;
   }
 
-  // 更新页面、强制更新、销毁页面
+
   function lifecycleMixin(Vue) {
     Vue.prototype._update = function (vnode, hydrating) {
       var vm = this;

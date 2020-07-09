@@ -110,7 +110,6 @@ export default class Watcher {
     try {
       // 现在只要知道是渲染就行了
       value = this.getter.call(vm, vm);
-      console.log('value1111111111', value)
       // debugger
     } catch (e) {
       if (this.user) {
@@ -235,7 +234,6 @@ export default class Watcher {
       this.deps[i].depend();
     }
   }
-
   /**
    * Remove self from all dependencies' subscriber list.
    */

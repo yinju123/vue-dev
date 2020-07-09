@@ -14,6 +14,7 @@ function Vue(options) {
 initMixin(Vue);
 stateMixin(Vue);
 eventsMixin(Vue);
+// update
 lifecycleMixin(Vue);
 // 初始化render
 renderMixin(Vue);
