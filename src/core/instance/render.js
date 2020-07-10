@@ -115,8 +115,9 @@ export function renderMixin(Vue: Class<Component>) {
       // when parent component is patched.
       currentRenderingInstance = vm;
       // _renderProxy 是proxy 但是handlers 只有 has 这是属性，就是拦截 in 操作
-      console.log('render', render)
+      // vnode 虚拟dom
       vnode = render.call(vm._renderProxy, vm.$createElement);
+      // vnode = render.call(vm._renderProxy);
       // debugger
     } catch (e) {
       handleError(e, vm, `render`);

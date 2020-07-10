@@ -72,10 +72,11 @@ export function createPatchFunction(backend) {
   const cbs = {}
 
   const { modules, nodeOps } = backend
-
+  // 将modules里面的 'create', 'activate', 'update', 'remove', 'destroy' 提取出来
   for (i = 0; i < hooks.length; ++i) {
     cbs[hooks[i]] = []
     for (j = 0; j < modules.length; ++j) {
+      // 存在
       if (isDef(modules[j][hooks[i]])) {
         cbs[hooks[i]].push(modules[j][hooks[i]])
       }
@@ -516,8 +517,8 @@ export function createPatchFunction(backend) {
       vnode = ownerArray[index] = cloneVNode(vnode)
     }
 
+    // console.log('oldVnode', oldVnode)
     const elm = vnode.elm = oldVnode.elm
-
     if (isTrue(oldVnode.isAsyncPlaceholder)) {
       if (isDef(vnode.asyncFactory.resolved)) {
         hydrate(oldVnode.elm, vnode, insertedVnodeQueue)
@@ -699,23 +700,26 @@ export function createPatchFunction(backend) {
   }
 
   return function patch(oldVnode, vnode, hydrating, removeOnly) {
-    // console.log(oldVnode, vnode)
+    // 如果老组件有，新组建没有，那么组件就是销毁了
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
       return
     }
-
+    console.log('vnode', vnode)
     let isInitialPatch = false
     const insertedVnodeQueue = []
 
+    // 老组件没有 
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
       isInitialPatch = true
       createElm(vnode, insertedVnodeQueue)
     } else {
       const isRealElement = isDef(oldVnode.nodeType)
+
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
+        // oldVnode 
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
         if (isRealElement) {
