@@ -180,7 +180,7 @@ export function createPatchFunction(backend) {
         // with append="tree".
         const appendAsTree = isDef(data) && isTrue(data.appendAsTree)
         if (!appendAsTree) {
-          if (isDef(data)) {
+          if ((data)) {
             invokeCreateHooks(vnode, insertedVnodeQueue)
           }
           insert(parentElm, vnode.elm, refElm)
