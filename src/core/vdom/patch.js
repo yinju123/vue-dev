@@ -142,7 +142,7 @@ export function createPatchFunction(backend) {
       vnode = ownerArray[index] = cloneVNode(vnode)
     }
     vnode.isRootInsert = !nested // for transition enter check
-    // 
+    // 不知道干什么的，但是基本false
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
@@ -193,6 +193,7 @@ export function createPatchFunction(backend) {
           insert(parentElm, vnode.elm, refElm)
         }
       } else {
+        // 递归 创建子代节点
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue)
@@ -224,10 +225,10 @@ export function createPatchFunction(backend) {
       }
     */
     let i = vnode.data
-    // 从字义上说应该是，是否是组件实例
     if (isDef(i)) {
       // underfined
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+      // 基本false
       if (isDef(i = i.hook) && isDef(i = i.init)) {
         i(vnode, false /* hydrating */)
       }
@@ -235,6 +236,8 @@ export function createPatchFunction(backend) {
       // it should've created a child instance and mounted it. the child
       // component also has set the placeholder vnode's elm.
       // in that case we can just return the element and be done.
+      // 从字义上说应该是，是否是组件实例
+      // undefined
       if (isDef(vnode.componentInstance)) {
         initComponent(vnode, insertedVnodeQueue)
         insert(parentElm, vnode.elm, refElm)
@@ -302,6 +305,7 @@ export function createPatchFunction(backend) {
   function createChildren(vnode, children, insertedVnodeQueue) {
     if (Array.isArray(children)) {
       if (process.env.NODE_ENV !== 'production') {
+        // 检验children的key是否一样
         checkDuplicateKeys(children)
       }
       for (let i = 0; i < children.length; ++i) {
@@ -420,6 +424,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 老标签、oldVnode.children、oldVnode、vnode.children、[]、false
   function updateChildren(parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
     let oldStartIdx = 0
     let newStartIdx = 0
@@ -517,6 +522,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // diff 算法
   function patchVnode(
     oldVnode,
     vnode,
@@ -534,8 +540,8 @@ export function createPatchFunction(backend) {
       vnode = ownerArray[index] = cloneVNode(vnode)
     }
 
-    // console.log('oldVnode', oldVnode)
     const elm = vnode.elm = oldVnode.elm
+    // 不知道这是干什么的，大部分都是false
     if (isTrue(oldVnode.isAsyncPlaceholder)) {
       if (isDef(vnode.asyncFactory.resolved)) {
         hydrate(oldVnode.elm, vnode, insertedVnodeQueue)
@@ -544,11 +550,11 @@ export function createPatchFunction(backend) {
       }
       return
     }
-
     // reuse element for static trees.
     // note we only do this if the vnode is cloned -
     // if the new node is not cloned it means the render functions have been
     // reset by the hot-reload-api and we need to do a proper re-render.
+    // 这也不知道什么什么内容
     if (isTrue(vnode.isStatic) &&
       isTrue(oldVnode.isStatic) &&
       vnode.key === oldVnode.key &&

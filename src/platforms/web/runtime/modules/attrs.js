@@ -18,7 +18,7 @@ import {
   convertEnumeratedValue
 } from 'web/util/index'
 
-function updateAttrs (oldVnode: VNodeWithData, vnode: VNodeWithData) {
+function updateAttrs(oldVnode: VNodeWithData, vnode: VNodeWithData) {
   const opts = vnode.componentOptions
   if (isDef(opts) && opts.Ctor.options.inheritAttrs === false) {
     return
@@ -59,7 +59,7 @@ function updateAttrs (oldVnode: VNodeWithData, vnode: VNodeWithData) {
   }
 }
 
-function setAttr (el: Element, key: string, value: any) {
+function setAttr(el: Element, key: string, value: any) {
   if (el.tagName.indexOf('-') > -1) {
     baseSetAttr(el, key, value)
   } else if (isBooleanAttr(key)) {
@@ -88,7 +88,7 @@ function setAttr (el: Element, key: string, value: any) {
   }
 }
 
-function baseSetAttr (el, key, value) {
+function baseSetAttr(el, key, value) {
   if (isFalsyAttrValue(value)) {
     el.removeAttribute(key)
   } else {
