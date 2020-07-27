@@ -11,10 +11,13 @@ import {
   genClassForVnode
 } from 'web/util/index'
 
-function updateClass (oldVnode: any, vnode: any) {
+function updateClass(oldVnode: any, vnode: any) {
   const el = vnode.elm
   const data: VNodeData = vnode.data
   const oldData: VNodeData = oldVnode.data
+  // staticClass 写死的class内容 不是动态calss
+  // 绑定class的结果 {name：false}
+  // 新老的class都是空的，不需要更新
   if (
     isUndef(data.staticClass) &&
     isUndef(data.class) && (

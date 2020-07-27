@@ -2,7 +2,7 @@
 
 import { isDef, isObject } from 'shared/util'
 
-export function genClassForVnode (vnode: VNodeWithData): string {
+export function genClassForVnode(vnode: VNodeWithData): string {
   let data = vnode.data
   let parentNode = vnode
   let childNode = vnode
@@ -20,7 +20,7 @@ export function genClassForVnode (vnode: VNodeWithData): string {
   return renderClass(data.staticClass, data.class)
 }
 
-function mergeClassData (child: VNodeData, parent: VNodeData): {
+function mergeClassData(child: VNodeData, parent: VNodeData): {
   staticClass: string,
   class: any
 } {
@@ -32,7 +32,7 @@ function mergeClassData (child: VNodeData, parent: VNodeData): {
   }
 }
 
-export function renderClass (
+export function renderClass(
   staticClass: ?string,
   dynamicClass: any
 ): string {
@@ -43,11 +43,11 @@ export function renderClass (
   return ''
 }
 
-export function concat (a: ?string, b: ?string): string {
+export function concat(a: ?string, b: ?string): string {
   return a ? b ? (a + ' ' + b) : a : (b || '')
 }
 
-export function stringifyClass (value: any): string {
+export function stringifyClass(value: any): string {
   if (Array.isArray(value)) {
     return stringifyArray(value)
   }
@@ -61,7 +61,7 @@ export function stringifyClass (value: any): string {
   return ''
 }
 
-function stringifyArray (value: Array<any>): string {
+function stringifyArray(value: Array<any>): string {
   let res = ''
   let stringified
   for (let i = 0, l = value.length; i < l; i++) {
@@ -73,7 +73,7 @@ function stringifyArray (value: Array<any>): string {
   return res
 }
 
-function stringifyObject (value: Object): string {
+function stringifyObject(value: Object): string {
   let res = ''
   for (const key in value) {
     if (value[key]) {

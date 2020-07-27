@@ -123,7 +123,7 @@ export function createPatchFunction(backend) {
   }
 
   let creatingElmInVPre = 0
-
+  // 新的vnode 、、老的vnode的父标签、老的兄弟标签
   function createElm(
     vnode,
     insertedVnodeQueue,
@@ -425,6 +425,16 @@ export function createPatchFunction(backend) {
   }
 
   // 老标签、oldVnode.children、oldVnode、vnode.children、[]、false
+  // 比较子代元素
+  /* 
+    先找到新vnode是否存在oldVnode，存在则patchVnode，更新标签
+    如果不存在则直接创建
+    
+    判断是否存在oldVnode，有四种排列
+    如果不在这四种排列中则，for循环查找，没有找到则创建
+    最后，oldVnode多出的内容删除，newVnode多出的内容创建
+  
+  */
   function updateChildren(parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
     let oldStartIdx = 0
     let newStartIdx = 0
@@ -469,10 +479,13 @@ export function createPatchFunction(backend) {
         oldEndVnode = oldCh[--oldEndIdx]
         newStartVnode = newCh[++newStartIdx]
       } else {
+        // key与index联系起来
         if (isUndef(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx)
+        // 找到新的vnode在老的里面的位置
         idxInOld = isDef(newStartVnode.key)
           ? oldKeyToIdx[newStartVnode.key]
           : findIdxInOld(newStartVnode, oldCh, oldStartIdx, oldEndIdx)
+        // 判断新的vnode 是否存在于老的vnode中
         if (isUndef(idxInOld)) { // New element
           createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm, false, newCh, newStartIdx)
         } else {
@@ -522,7 +535,7 @@ export function createPatchFunction(backend) {
     }
   }
 
-  // diff 算法
+  // update当前标签属性，样式，事件，文本等。同样的道理，如果都纯在后代，比较后代，如果有一个不存在，就直接创建或者移除。这部分只要是更新节点，判断后代是直接创建，还是需要比较
   function patchVnode(
     oldVnode,
     vnode,
@@ -566,8 +579,10 @@ export function createPatchFunction(backend) {
 
     let i
     const data = vnode.data
+    // 好像组件是会执行的
     if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
       i(oldVnode, vnode)
+      console.log(i)
     }
 
     const oldCh = oldVnode.children
@@ -739,9 +754,10 @@ export function createPatchFunction(backend) {
       const isRealElement = isDef(oldVnode.nodeType)
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
-        // oldVnode 
+        // 当新老都是vnode 并且是相同的vnode
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
+        // 这里走的是组件初始化
         if (isRealElement) {
           // mounting to a real element
           // check if this is server-rendered content and if we can perform
@@ -788,9 +804,11 @@ export function createPatchFunction(backend) {
 
 
         // update parent placeholder node element, recursively
+        // 使用组件vnode.parent 
         if (isDef(vnode.parent)) {
           let ancestor = vnode.parent
           const patchable = isPatchable(vnode)
+
           while (ancestor) {
             for (let i = 0; i < cbs.destroy.length; ++i) {
               cbs.destroy[i](ancestor)
