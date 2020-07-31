@@ -199,7 +199,7 @@ export function defineReactive(
         return;
       }
       /* eslint-enable no-self-compare */
-      // customSetter好像没有
+      // customSetter好像没有，props定义的时候有
       if (process.env.NODE_ENV !== "production" && customSetter) {
         customSetter();
       }
