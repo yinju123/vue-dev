@@ -9,7 +9,7 @@
 <body>
   <div id="demo" @click="getA">
     <sku class="mm" :num="num" :age="age"></sku>
-    {{a}}
+    <div class="a" v-for="item in a">{{item}}</div>
   </div>
   <script>
     // 一个组件一个watcher，data有几个对象，就有几个observers，dep的数量是
@@ -37,11 +37,13 @@
           name: "seclusion",
           age: 26
         },
-        a: 12,
+        a: [1, 2, 3],
         num: { a: 1 }
       },
       mounted() {
-
+        setTimeout(() => {
+          this.a.push(2)
+        })
       },
       components: {
         sku: {

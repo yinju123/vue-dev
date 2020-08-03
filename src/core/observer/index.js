@@ -56,7 +56,6 @@ export class Observer {
     } else {
       // 如果是对象
       this.walk(value);
-
     }
   }
 
