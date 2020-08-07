@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Vue源码剖析</title>
+  <script src="../../dist/vue.js"></script>
+</head>
+
+<body>
+  <div id="demo" class="demo" data-name="seclusion">
+    333333333333333
+  </div>
+  <script>
+    let oDemo = document.querySelector('.demo')
+    oDemo.addEventListener('click', function (e) {
+      console.log(e.currentTarget.dataset)
+    })
+  </script>
+</body>
+
+</html>

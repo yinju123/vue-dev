@@ -77,7 +77,6 @@ function initProps(vm: Component, propsOptions: Object) {
     keys.push(key);
     // 校验数据类型是否匹配,返回prop对应的值
     const value = validateProp(key, propsOptions, propsData, vm);
-    console.log('value', value)
     /* istanbul ignore else */
     if (process.env.NODE_ENV !== "production") {
       // 驼峰命名获取破折号命名
@@ -152,7 +151,7 @@ function initData(vm: Component) {
           `Use prop default value instead.`,
           vm
         );
-      // 不是以$或者_开头的属性，进行代理
+      // 不是以$或者_开头的属性，进行代理,这是vue的内部属性
     } else if (!isReserved(key)) {
       // 将数据代理到vm上，并且数双向绑定
       proxy(vm, `_data`, key);
@@ -183,6 +182,7 @@ export function getData(data: Function, vm: Component): any {
 
 const computedWatcherOptions = { lazy: true };
 
+// 校验key，获取getter，执行defineComputed
 function initComputed(vm: Component, computed: Object) {
   // $flow-disable-line
   const watchers = (vm._computedWatchers = Object.create(null));
@@ -230,6 +230,7 @@ export function defineComputed(
   userDef: Object | Function
 ) {
   const shouldCache = !isServerRendering();
+  // 执行createComputedGetter
   if (typeof userDef === "function") {
     sharedPropertyDefinition.get = shouldCache
       ? createComputedGetter(key)
@@ -243,6 +244,7 @@ export function defineComputed(
       : noop;
     sharedPropertyDefinition.set = userDef.set || noop;
   }
+  // 不是函数，但是没有set，报错
   if (
     process.env.NODE_ENV !== "production" &&
     sharedPropertyDefinition.set === noop
@@ -257,14 +259,19 @@ export function defineComputed(
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
+// 计算属性的key的get，由dirty控制，如果为true，表示依赖变了，重新计算
 function createComputedGetter(key) {
   return function computedGetter() {
+    // this-> vm
     const watcher = this._computedWatchers && this._computedWatchers[key];
     if (watcher) {
+      // 判断依赖是否变化
       if (watcher.dirty) {
         watcher.evaluate();
       }
+      // 
       if (Dep.target) {
+        // 将
         watcher.depend();
       }
       return watcher.value;
