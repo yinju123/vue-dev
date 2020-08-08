@@ -40,9 +40,10 @@
       computed: {
         reduce: {
           get() {
+            console.log(22222)
             return this.a + this.b
           },
-          cache: false
+          // cache: false 
         },
         // reduce() {
         //   return this.a + this.b
@@ -50,7 +51,7 @@
       },
       mounted() {
         setTimeout(() => {
-          this.a++
+          console.log(this.reduce)
         }, 1000)
       },
       components: {
@@ -69,7 +70,7 @@
           },
           template: `<div class="nn">这是sku{{obj.age}}</div>`,
           mounted() {
-            console.log(111, this.obj)
+            // console.log(111, this.obj)
           }
         }
       },
@@ -79,7 +80,7 @@
         }
       }
     });
-
+    console.log('app', app)
 
   </script>
 </body>

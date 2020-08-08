@@ -269,7 +269,7 @@ function createComputedGetter(key) {
       if (watcher.dirty) {
         watcher.evaluate();
       }
-      // 
+      // 这部分不知道是干什么的
       if (Dep.target) {
         // 将
         watcher.depend();

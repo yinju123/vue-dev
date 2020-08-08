@@ -582,7 +582,6 @@ export function createPatchFunction(backend) {
     // 好像组件是会执行的
     if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
       i(oldVnode, vnode)
-      console.log(i)
     }
 
     const oldCh = oldVnode.children
