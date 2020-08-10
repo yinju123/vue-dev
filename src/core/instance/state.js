@@ -56,6 +56,7 @@ export function initState(vm: Component) {
   } else {
     observe((vm._data = {}), true /* asRootData */);
   }
+  // console.log('Dep.target', Dep.target)
   if (opts.computed) initComputed(vm, opts.computed);
   if (opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch);
@@ -269,9 +270,8 @@ function createComputedGetter(key) {
       if (watcher.dirty) {
         watcher.evaluate();
       }
-      // 这部分不知道是干什么的
+      // 这部分是为更新依赖，出现组件A引用计算属性B的情况，B依赖数据C，或者计算属性A引用计算属性B这种情况,B依赖数据C。C变化，通知的顺序不是C通知B,B通知A,而是C通知BA
       if (Dep.target) {
-        // 将
         watcher.depend();
       }
       return watcher.value;
@@ -378,12 +378,19 @@ export function stateMixin(Vue: Class<Component>) {
     options?: Object
   ): Function {
     const vm: Component = this;
+    // 自定义的watch 这里是cb是key
     if (isPlainObject(cb)) {
       return createWatcher(vm, expOrFn, cb, options);
     }
     options = options || {};
     options.user = true;
+    /* 
+      expOrFn -> key
+      cb -> 真实handler
+      options -> key对应的val
+    */
     const watcher = new Watcher(vm, expOrFn, cb, options);
+    // 是否立即出发
     if (options.immediate) {
       try {
         cb.call(vm, watcher.value);

@@ -98,6 +98,7 @@ export default class Watcher {
     // this.lazy 是跟before里面一起的 options
     // lazy 表示不会马上调用getter，而是等到真正调用时才会调用getter
     this.value = this.lazy ? undefined : this.get();
+    // console.log('this.value', this.value)
   }
 
   /**
